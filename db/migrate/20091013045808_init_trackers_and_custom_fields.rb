@@ -1,7 +1,6 @@
 class InitTrackersAndCustomFields < ActiveRecord::Migration
   def self.up
-    CustomValue.destroy_all
-    Issue.delete_all
+    Issue.destroy_all('parent_id is null')
     Tracker.destroy_all
     script_tracker = Tracker.create!(:name => 'Script', :is_in_chlog => true, :is_in_roadmap => true)
     script_run_tracker = Tracker.create!(:name => 'Script run', :is_in_chlog => true, :is_in_roadmap => true)
