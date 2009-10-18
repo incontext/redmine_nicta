@@ -4,11 +4,12 @@
 
 <div class="contextual">
 <%= link_to_if_authorized(l(:subtasks_button_add_script_run),
-													{ :controller => 'issues',
-														:action => 'add_subissue',
-														:project_id => @project.id,
-														:parent_issue_id => @issue.id },
-													:class => 'icon icon-add') %>
+                          { :controller => 'issues',
+                            :action => 'add_subissue',
+                            :project_id => @project.id,
+                            :tracker_id => @issue.tracker.id,
+                            :parent_issue_id => @issue.id },
+                            :class => 'icon icon-add') %>
 <%= link_to_if_authorized(l(:button_update), {:controller => 'issues', :action => 'edit', :id => @issue }, :onclick => 'showAndScrollTo("update", "notes"); return false;', :class => 'icon icon-edit', :accesskey => accesskey(:edit)) %>
 <%= link_to_if_authorized l(:button_log_time), {:controller => 'timelog', :action => 'edit', :issue_id => @issue}, :class => 'icon icon-time-add' %>
 <%= watcher_tag(@issue, User.current) %>
@@ -30,11 +31,35 @@
 <table width="100%">
 <tr>
     <td style="width:15%" class="status"><b><%=l(:field_status)%>:</b></td><td style="width:35%" class="status"><%= @issue.status.name %></td>
+    <% unless ['Script', 'Script run'].include?(@issue.tracker.name) %>
+      <td style="width:15%" class="start-date"><b><%=l(:field_start_date)%>:</b></td><td style="width:35%"><%= format_date(@issue.start_date) %></td>
+    <% end %>
 </tr>
-<tr>
-    <td class="category"><b><%=l(:field_category)%>:</b></td><td><%=h @issue.category ? @issue.category.name : "-" %></td>
-</tr>
-<tr>
+
+<% unless ['Script', 'Script run'].include?(@issue.tracker.name) %>
+  <tr>
+      <td class="priority"><b><%=l(:field_priority)%>:</b></td><td class="priority"><%= @issue.priority.name %></td>
+      <td class="due-date"><b><%=l(:field_due_date)%>:</b></td><td class="due-date"><%= format_date(@issue.due_date) %></td>
+  </tr>
+  <tr>
+      <td class="assigned-to"><b><%=l(:field_assigned_to)%>:</b></td><td><%= avatar(@issue.assigned_to, :size => "14") %><%= @issue.assigned_to ? link_to_user(@issue.assigned_to) : "-" %></td>
+      <td class="progress"><b><%=l(:field_done_ratio)%>:</b></td><td class="progress"><%= progress_bar @issue.done_ratio, :width => '80px', :legend => "#{@issue.done_ratio}%" %></td>
+  </tr>
+  <tr>
+      <td class="category"><b><%=l(:field_category)%>:</b></td><td><%=h @issue.category ? @issue.category.name : "-" %></td>
+      <% if User.current.allowed_to?(:view_time_entries, @project) %>
+      <td class="spent-time"><b><%=l(:label_spent_time)%>:</b></td>
+      <td class="spent-hours"><%= @issue.spent_hours > 0 ? (link_to l_hours(@issue.spent_hours), {:controller => 'timelog', :action => 'details', :project_id => @project, :issue_id => @issue}) : "-" %></td>
+      <% end %>
+  </tr>
+  <tr>
+      <td class="fixed-version"><b><%=l(:field_fixed_version)%>:</b></td><td><%= @issue.fixed_version ? link_to_version(@issue.fixed_version) : "-" %></td>
+      <% if @issue.estimated_hours %>
+      <td class="estimated-hours"><b><%=l(:field_estimated_hours)%>:</b></td><td><%= l_hours(@issue.estimated_hours) %></td>
+      <% end %>
+  </tr>
+  <tr>
+<% end %>
 <% n = 0 -%>
 <% @issue.custom_field_values.each do |value| -%>
     <td valign="top"><b><%=h value.custom_field.name %>:</b></td><td valign="top"><%= simple_format(h(show_value(value))) %></td>

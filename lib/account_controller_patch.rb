@@ -6,7 +6,8 @@ module AccountControllerPatch
     base.extend InstanceMethods
 
     base.class_eval do
-      acts_as_captcha
+      #unloadable
+      #acts_as_captcha
       alias_method_chain :register, :captcha
     end
   end
