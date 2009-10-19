@@ -1,3 +1,4 @@
+
 require 'hpricot'
 
 class ResultsController < ApplicationController
@@ -12,6 +13,7 @@ class ResultsController < ApplicationController
         outcome = (doc/"experiment-outcome").first
         outcome_script = (doc/"experiment-outcome"/"script").first
         outcome_measurments = (doc/"experiment-outcome"/"measurements").first
+        outcome_properties = (doc/"experiment-outcome"/"properties"/"property")
 
         project = Project.find_by_identifier(outcome.at('project').innerHTML)
         user = User.find_by_login(outcome.at('userid').innerHTML)
@@ -50,6 +52,10 @@ class ResultsController < ApplicationController
           hash[field.id] = field_value[1] if field
           hash
           end
+        #parse propertities data to attributes
+        attribute_text = outcome_properties.map {|v| "#{v.attributes['name']}: #{v.innerHTML}"}.join(', ')
+        field_values[IssueCustomField.find_by_name('Attribute text').id] = attribute_text
+
         script_run.custom_field_values = field_values
         script_run.save!
         script_run.move_to_child_of(script)
