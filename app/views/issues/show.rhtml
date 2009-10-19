@@ -3,7 +3,7 @@
 <% end %>
 
 <div class="contextual">
-<%= link_to_if_authorized(l(:subtasks_button_add_script_run),
+<%= link_to_if_authorized(@issue.tracker.name == 'Script' ? l(:subtasks_button_add_script_run) : l(:subtasks_button_add_subissue),
                           { :controller => 'issues',
                             :action => 'add_subissue',
                             :project_id => @project.id,
@@ -62,7 +62,7 @@
 <% end %>
 <% n = 0 -%>
 <% @issue.custom_field_values.each do |value| -%>
-    <td valign="top"><b><%=h value.custom_field.name %>:</b></td><td valign="top"><%= simple_format(h(show_value(value))) %></td>
+    <td valign="top"><b><%=h value.custom_field.name %>:</b></td><td valign="top"><%= simple_format(show_value(value)) %></td>
 <% n = n + 1
    if (n > 1)
         n = 0 %>
