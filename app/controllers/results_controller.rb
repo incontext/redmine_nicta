@@ -44,7 +44,7 @@ class ResultsController < ApplicationController
           ['Script uri', outcome_script.at('uri').innerHTML],
           ['Log file', outcome_measurments.at('log').innerHTML],
           ['Log data', outcome_measurments.at('logdata').innerHTML],
-          ['Run start time', Time.parse(outcome.at('start').innerHTML).strftime('%I:%M:%S %p')],
+          ['Run start time', Time.parse(outcome.at('start').innerHTML).strftime('%m/%d/%Y %I:%M:%S %p %Z')],
           ['Run duration', outcome.at('duration').innerHTML],
           ['Measurements DB', outcome_measurments.at('database').innerHTML],
           ['Measurements metadata', outcome_measurments.at('metadata').innerHTML]].inject ({}) do |hash, field_value|
