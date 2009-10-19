@@ -1,6 +1,6 @@
 <% if @issue.new_record? %>
-  <% if @tracker and @tracker.name == 'Script run' %>
-    <p><%= f.select :tracker_id, [[@tracker.name, @tracker.id]], :required => true %></p>
+  <% if @issue.tracker and @issue.tracker.name == 'Script run' %>
+    <p><%= f.select :tracker_id, [[@issue.tracker.name, @issue.tracker.id]], :required => true %></p>
   <% else %>
     <p><%= f.select :tracker_id, @project.trackers.collect {|t| [t.name, t.id]}, :required => true %></p>
   <% end %>

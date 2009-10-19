@@ -7,7 +7,7 @@
                           { :controller => 'issues',
                             :action => 'add_subissue',
                             :project_id => @project.id,
-                            :tracker_id => @issue.tracker.id,
+                            :tracker_id => @issue.tracker.name == 'Script' ? Tracker.find_by_name('Script run').id : @issue.tracker.id,
                             :parent_issue_id => @issue.id },
                             :class => 'icon icon-add') %>
 <%= link_to_if_authorized(l(:button_update), {:controller => 'issues', :action => 'edit', :id => @issue }, :onclick => 'showAndScrollTo("update", "notes"); return false;', :class => 'icon icon-edit', :accesskey => accesskey(:edit)) %>
