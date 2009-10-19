@@ -26,7 +26,7 @@ class ResultsController < ApplicationController
           script.author = user
           script.subject = outcome.at('id').innerHTML
           script.tracker = Tracker.find_by_name('Script')
-          field_values = [['Type', 'Wifi'], ['Batch', '1'], ['Resume', '1']].inject ({}) do |hash, field_value|
+          field_values = [['Type', 'Wifi'], ['Batch', '0'], ['Resume', '0']].inject ({}) do |hash, field_value|
             field = IssueCustomField.find_by_name(field_value[0])
             hash[field.id] = field_value[1] if field
             hash
