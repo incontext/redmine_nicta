@@ -1,0 +1,34 @@
+<%= javascript_include_tag 'codemirror/codemirror.js', :plugin => 'redmine_nicta' %>
+
+<h2>
+  <%= "Script # #{@filename} (v #{@commits.size})" %>
+</h2>
+
+<% if @commits.size > 1 %>
+  Versions:
+  <% form_tag('/scripts/1', :method => 'get') do %>
+    <%= select_tag :version, options_for_select(@commits.map {|v| [v.message, v.sha] }, (@commit ? [@commit.message, @commit.sha] : nil)) %>
+    <%= hidden_field_tag :filename, @filename %>
+    <%= submit_tag 'Load' %>
+  <% end %>
+<% end %>
+
+<% form_tag('/scripts') do %>
+  <%= text_area_tag :script, @script.contents %>
+  <%= text_field_tag :message %>
+  <%= hidden_field_tag :filename, @filename %>
+  <%= submit_tag 'Commit' %>
+<% end %>
+
+<script type="text/javascript">
+    var editor = CodeMirror.fromTextArea('script', {
+        parserfile: ["tokenizeruby.js", "parseruby.js"],
+        stylesheet: "/plugin_assets/redmine_nicta/stylesheets/codemirror/rubycolors.css",
+        path: "/plugin_assets/redmine_nicta/javascripts/codemirror/",
+        lineNumbers: false,
+        textWrapping: false,
+        indentUnit: 2,
+        parserConfig: {},
+        height: '400px'
+    });
+</script>

@@ -1,4 +1,5 @@
 require 'redmine'
+require 'git'
 
 #require_dependency 'user_model_patch'
 #require_dependency 'account_controller_patch'
