@@ -2,3 +2,4 @@
 en:
   my_label: "My label"
   subtasks_button_add_script_run: Add script run
+  field_script_path: Script path

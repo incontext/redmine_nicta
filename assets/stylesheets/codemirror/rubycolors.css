@@ -1,3 +1,14 @@
+.CodeMirror-line-numbers {
+  background-color:#333333;
+  color:#999999;
+  font-size:10pt;
+  line-height:1.2em;
+  margin:0;
+  padding:0.4em;
+  text-align:right;
+  width:1.5em;
+}
+
 .editbox {
   padding: .4em;
   margin: 0;

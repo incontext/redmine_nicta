@@ -1,34 +1,38 @@
 <%= javascript_include_tag 'codemirror/codemirror.js', :plugin => 'redmine_nicta' %>
 
 <h2>
-  <%= "Script # #{@filename} (v #{@commits.size})" %>
+  <%= "Script # #{@filename} (#{@commit.message})" %>
 </h2>
 
+<p>
+<%= "Number of commits: #{@commits.size}" %>
+</p>
 <% if @commits.size > 1 %>
-  Versions:
-  <% form_tag('/scripts/1', :method => 'get') do %>
-    <%= select_tag :version, options_for_select(@commits.map {|v| [v.message, v.sha] }, (@commit ? [@commit.message, @commit.sha] : nil)) %>
-    <%= hidden_field_tag :filename, @filename %>
-    <%= submit_tag 'Load' %>
-  <% end %>
+  <p>
+  Commits:
+  <%= select_tag :version, options_for_select(@commits.map {|v| [v.message, v.sha] }, (@commit ? [@commit.message, @commit.sha] : nil)) %>
+  <%= submit_tag 'Load', :onclick => "window.location= '/projects/#{@project.identifier}/scripts/' + $F('version') + '/#{@filename}';" %>
+  </p>
 <% end %>
 
-<% form_tag('/scripts') do %>
-  <%= text_area_tag :script, @script.contents %>
+<% form_tag('/scripts/commit') do %>
+  <%= text_area_tag :contents, @contents %>
   <%= text_field_tag :message %>
-  <%= hidden_field_tag :filename, @filename %>
+  <%= hidden_field_tag :latest_commit_id, @commit.sha %>
+  <%= hidden_field_tag :project_id, @project.identifier %>
+  <%= hidden_field_tag :script, @filename %>
   <%= submit_tag 'Commit' %>
 <% end %>
 
 <script type="text/javascript">
-    var editor = CodeMirror.fromTextArea('script', {
-        parserfile: ["tokenizeruby.js", "parseruby.js"],
-        stylesheet: "/plugin_assets/redmine_nicta/stylesheets/codemirror/rubycolors.css",
-        path: "/plugin_assets/redmine_nicta/javascripts/codemirror/",
-        lineNumbers: false,
-        textWrapping: false,
-        indentUnit: 2,
-        parserConfig: {},
-        height: '400px'
-    });
+  var editor = CodeMirror.fromTextArea('contents', {
+    parserfile: ["tokenizeruby.js", "parseruby.js"],
+    stylesheet: "/plugin_assets/redmine_nicta/stylesheets/codemirror/rubycolors.css",
+    path: "/plugin_assets/redmine_nicta/javascripts/codemirror/",
+    lineNumbers: false,
+    textWrapping: false,
+    indentUnit: 2,
+    parserConfig: {},
+    height: '400px'
+  });
 </script>
