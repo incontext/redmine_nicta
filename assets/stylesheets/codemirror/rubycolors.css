@@ -9,6 +9,10 @@
   width:1.5em;
 }
 
+.CodeMirror-wrapping {
+  border: 1px solid #D7D7D7;
+}
+
 .editbox {
   padding: .4em;
   margin: 0;

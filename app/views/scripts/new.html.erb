@@ -6,9 +6,9 @@
 
 <% form_tag('/scripts/commit') do %>
   <%= text_area_tag :contents %>
-  Script name: <%= text_field_tag :script %>
   Commit message: <%= text_field_tag :message %>
   <%= hidden_field_tag :project_id, @project.identifier %>
+  <%= hidden_field_tag :script, @filename %>
   <%= submit_tag 'Commit' %>
 <% end %>
 

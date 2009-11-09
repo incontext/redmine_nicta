@@ -9,7 +9,7 @@ class ScriptPathIssueHook  < Redmine::Hook::ViewListener
   def view_issues_show_details_bottom(context = { })
     if context[:issue].tracker.name == 'Script'
       script_path = html_escape(context[:issue].script_path)
-      data = "<td><b>Script path :</b></td><td><a href= '/projects/#{context[:project].identifier}/scripts/master/#{script_path}'>#{script_path}</a></td>"
+      data = "<td><b>Script path :</b></td><td><a href= '/projects/#{context[:project].identifier}/scripts/master/#{context[:issue].subject}/#{script_path}'>#{script_path}</a></td>"
       return "<tr>#{data}<td></td></tr>"
     else
       return ''
