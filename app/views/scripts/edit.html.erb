@@ -8,15 +8,14 @@
   <div class='box'>
     <% if @commits %>
       <p>
-      <%= "Number of commits: #{@commits.size}" %>
-      </p>
+      <%= "<b>Number of commits</b>: #{@commits.size}" %>
       <% if @commits.size > 1 %>
-        <p>
-        Commits:
-        <%= select_tag :version, options_for_select(@commits.map {|v| [v.message, v.sha] }, (@commit ? [@commit.message, @commit.sha] : nil)) %>
+        <b>Commits</b>:
+        <%= select_tag :version,
+              options_for_select(@commits.each_with_index.map {|v, index| ["#{@commits.size - index}: #{v.message}", v.sha] }, (@commit ? @commit.sha : nil)) %>
         <%= submit_tag 'Load', :onclick => "window.location= '/projects/#{@project.identifier}/scripts/' + $F('version') + '/#{@filename}';" %>
-        </p>
       <% end %>
+      </p>
     <% end %>
 
     <% form_tag('/scripts/commit') do %>
