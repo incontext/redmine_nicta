@@ -8,9 +8,11 @@ require 'dispatcher'
 
 # Patches
 require_dependency 'project_model_patch'
+require_dependency 'issue_model_patch'
 
 Dispatcher.to_prepare do
   Project.send(:include, ProjectModelPatch)
+  Issue.send(:include, IssueModelPatch)
 end
 
 # Hooks
