@@ -23,3 +23,11 @@ Redmine::Plugin.register :redmine_nicta do
   description 'This is a plugin for Nicta'
   version '0.0.5'
 end
+
+Redmine::MenuManager.map :project_menu do |menu|
+  menu.delete :issues
+  menu.delete :new_issue
+  menu.push :issues, { :controller => 'issues', :action => 'index' }, :param => :project_id, :caption => :label_experiment_plural, :after => :roadmap
+  menu.push :new_issue, { :controller => 'issues', :action => 'new' }, :param => :project_id, :caption => :label_experiment_new, :before => :news,
+              :html => { :accesskey => Redmine::AccessKeys.key_for(:new_issue) }
+end
