@@ -1,11 +1,12 @@
 # Hooks to attach to the Redmine Issues.
-class ScriptPathIssueHook  < Redmine::Hook::ViewListener
+class ScriptIssueHook  < Redmine::Hook::ViewListener
 
   # Context:
   # * :issue => Issue being rendered
   #
   def view_issues_show_details_bottom(context = { })
-    if context[:issue].tracker.name == 'Script'
+    case context[:issue].tracker.name
+    when 'Script'
       script_path = html_escape(context[:issue].script_path)
       identifier = html_escape(context[:issue].identifier)
       data = "<td><b>Script path :</b></td>"
@@ -18,6 +19,8 @@ class ScriptPathIssueHook  < Redmine::Hook::ViewListener
         <td><b>Indentifier :</b></td>
         <td>#{identifier}</td>"
       return "<tr>#{data}<td></td></tr>"
+    when 'Script run'
+      data = "<td><b>Script version :</b></td><td>#{html_escape(context[:issue].script_version)}</td>"
     else
       return ''
     end
@@ -28,7 +31,8 @@ class ScriptPathIssueHook  < Redmine::Hook::ViewListener
   # * :project => Current project
   #
   def view_issues_form_details_bottom(context = { })
-    if context[:issue].tracker.name == 'Script'
+    case context[:issue].tracker.name
+    when 'Script'
       script_path_text_field = context[:form].text_field :script_path
       identifier_text_field = ''
       begin
@@ -44,6 +48,19 @@ class ScriptPathIssueHook  < Redmine::Hook::ViewListener
         identifier_text_field = context[:form].text_field :identifier
       end
       return "<p>#{script_path_text_field}</p><p>#{identifier_text_field}</p>"
+    when 'Script run'
+      script_version_field = ''
+      begin
+        g =  Git.open(AppConfig['git_dir'] + context[:project].identifier)
+        parent_issue = context[:issue].parent
+        commits = g.gblob("#{parent_issue.identifier}/#{parent_issue.script_path}").log
+        script_version_field = context[:form].select :script_version, commits.collect {|v| [v.message, v.sha]}
+      rescue
+        script_version_field = context[:form].select :script_version, [[]]
+      end
+      attribute_text_field = context[:form].text_area :attribute_text, :rows => 3, :style => 'width: 90%'
+      log_data_field = context[:form].text_area :log_data, :rows => 3, :style => 'width: 90%'
+      return "<p>#{script_version_field}</p><p>#{attribute_text_field}</p><p>#{log_data_field}</p>"
     else
       return ''
     end

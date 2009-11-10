@@ -16,7 +16,7 @@ Dispatcher.to_prepare do
 end
 
 # Hooks
-require_dependency 'script_path_issue_hook'
+require_dependency 'script_issue_hook'
 require_dependency 'git_project_hook'
 
 Redmine::Plugin.register :redmine_nicta do

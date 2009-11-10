@@ -3,5 +3,8 @@ en:
   my_label: "My label"
   subtasks_button_add_script_run: Add script run
   field_script_path: Script path
+  field_script_version: Script version
+  field_attribute_text: Attribute text
+  field_log_data: Log data
   label_experiment_plural: Experiments
   label_experiment_new: New experiment
