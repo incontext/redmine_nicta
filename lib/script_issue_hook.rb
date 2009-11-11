@@ -20,7 +20,14 @@ class ScriptIssueHook  < Redmine::Hook::ViewListener
         <td>#{identifier}</td>"
       return "<tr>#{data}<td></td></tr>"
     when 'Script run'
-      data = "<tr><td><b>Script version :</b></td><td>#{html_escape(context[:issue].script_version)}</td></tr>"
+      script_version = html_escape(context[:issue].script_version)
+      if context[:issue].parent and context[:issue].parent.identifier and context[:issue].parent.script_path and script_version != ''
+        data = "<tr><td><b>Script version :</b></td>"
+        data << "<td><a href= '/projects/#{context[:project].identifier}/scripts/#{script_version}/#{context[:issue].parent.identifier}/#{context[:issue].parent.script_path}'>#{script_version}</a></td></tr>"
+      else
+        data = "<tr><td><b>Script version :</b></td><td>#{script_version}</td></tr>"
+      end
+
       attribute_text = html_escape(context[:issue].attribute_text)
       attribute_text_display = "<div style='height: 100px; overflow: auto;'><table width=100%>"
       display_content = attribute_text.split(',').inject '' do |str, v|
