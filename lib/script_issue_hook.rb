@@ -20,7 +20,21 @@ class ScriptIssueHook  < Redmine::Hook::ViewListener
         <td>#{identifier}</td>"
       return "<tr>#{data}<td></td></tr>"
     when 'Script run'
-      data = "<td><b>Script version :</b></td><td>#{html_escape(context[:issue].script_version)}</td>"
+      data = "<tr><td><b>Script version :</b></td><td>#{html_escape(context[:issue].script_version)}</td></tr>"
+      attribute_text = html_escape(context[:issue].attribute_text)
+      attribute_text_display = "<div style='height: 100px; overflow: auto;'><table width=100%>"
+      display_content = attribute_text.split(',').inject '' do |str, v|
+        v_pair = v.split(':')
+        str << "<tr><td>#{v_pair[0]}</td><td>#{v_pair[1]}</td></tr>"
+        str
+      end
+      attribute_text_display << display_content
+      attribute_text_display << "</table></div>"
+      data << "<tr><td valign='top'><b>Attribute text :</b></td><td colspan=3>#{attribute_text_display}</td></tr>"
+      log_data = html_escape(context[:issue].log_data)
+      data << "<tr><td valign='top'><b>Log data :</b></td><td colspan=3>"
+      data << (log_data != '' ? "#{log_data[0, 64]}... (<a href='#' onclick=\"$('log_data').toggle();\">more</a>)<div id='log_data' style='display: none; height: 100px; margin-top: 10px; overflow: auto;'>#{log_data}</div>" : '')
+      data << "</td></tr>"
     else
       return ''
     end
