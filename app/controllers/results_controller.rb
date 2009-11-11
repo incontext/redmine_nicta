@@ -19,12 +19,13 @@ class ResultsController < ApplicationController
         user = User.find_by_login(outcome.at('userid').innerHTML)
         raise 'Project not found' unless project
 
-        script = project.issues.find_by_subject(outcome.at('id').innerHTML) || Issue.new
+        script = project.issues.find_by_identifier(outcome.at('id').innerHTML) || Issue.new
 
         if script.new_record?
           script.project = project
           script.author = user
           script.subject = outcome.at('id').innerHTML
+          script.identifier = outcome.at('id').innerHTML
           script.tracker = Tracker.find_by_name('Script')
           field_values = [['Type', 'Wifi'], ['Batch', '0'], ['Resume', '0']].inject ({}) do |hash, field_value|
             field = IssueCustomField.find_by_name(field_value[0])
@@ -32,18 +33,69 @@ class ResultsController < ApplicationController
             hash
           end
           script.custom_field_values = field_values
-          script.save!
         end
+
+        #Check script source
+        script_uri = outcome_script.at('uri').innerHTML
+        script_source = outcome_script.at('source').innerHTML
+        script_version = outcome_script.at('revision').innerHTML
+
+        uri = URI.split(script_uri)
+        uri_project, uri_dir, uri_path = uri[5].scan(/(\w+)\.git\/(\w+)\/(.+)/)[0]
+        raise "Repository name doesn't match project identifier" if uri_project != project.identifier
+        raise "Directory name doesn't match experiment identifier" if uri_dir != script.identifier
+
+        script.script_path = uri_path
+
+        g = Git.open(AppConfig['git_dir'] + project.identifier)
+
+        if g.lib.ls_files("#{uri_dir}/#{uri_path}").empty?
+          begin
+            g.chdir do
+              dirname = File.dirname("#{uri_dir}/#{uri_path}")
+              File.makedirs dirname unless File.exist?(dirname)
+              f = File.new("#{uri_dir}/#{uri_path}", 'w')
+              f.write(script_source)
+              f.close
+              g.add("#{uri_dir}/#{uri_path}")
+              g.commit_all("New file commited by http post at #{Time.now.to_s}")
+            end
+            script_version = g.gblob("#{uri_dir}/#{uri_path}").log.first.sha
+          rescue => e
+            g.reset_hard
+            raise e.message
+          end
+        else
+          contents = g.gblob("HEAD:#{uri_dir}/#{uri_path}").contents
+          if contents != script_source
+            begin
+              g.chdir do
+                f = File.new("#{uri_dir}/#{uri_path}", 'w')
+                f.write(script_source)
+                f.close
+                g.add("#{uri_dir}/#{uri_path}")
+                g.commit_all("File updated by http post at #{Time.now.to_s}")
+              end
+              script_version = g.gblob("#{uri_dir}/#{uri_path}").log.first.sha
+            rescue => e
+              g.reset_hard
+              raise e.message
+            end
+          else
+            script_version = g.gblob("#{uri_dir}/#{uri_path}").log.first.sha
+          end
+        end
+
+        script.save!
 
         script_run = Issue.new
         script_run.tracker = Tracker.find_by_name('Script run')
+        script_run.status = IssueStatus.find_by_name('Done')
         script_run.project = project
         script_run.author = user
-        script_run.subject = 'Experiment outcome for ' + script.subject
-        field_values = [['Script version', outcome_script.at('revision').innerHTML],
-          ['Script uri', outcome_script.at('uri').innerHTML],
+        script_run.subject = 'Experiment outcome for ' + script.identifier
+        field_values = [
           ['Log file', outcome_measurments.at('log').innerHTML],
-          ['Log data', outcome_measurments.at('logdata').innerHTML],
           ['Run start time', Time.parse(outcome.at('start').innerHTML).strftime('%m/%d/%Y %I:%M:%S %p %Z')],
           ['Run duration', outcome.at('duration').innerHTML],
           ['Measurements DB', outcome_measurments.at('database').innerHTML],
@@ -51,10 +103,13 @@ class ResultsController < ApplicationController
           field = IssueCustomField.find_by_name(field_value[0])
           hash[field.id] = field_value[1] if field
           hash
-          end
+        end
+
+        script_run.script_version = script_version
+        script_run.log_data = outcome_measurments.at('logdata').innerHTML
         #parse propertities data to attributes
         attribute_text = outcome_properties.map {|v| "#{v.attributes['name']}: #{v.innerHTML}"}.join(', ')
-        field_values[IssueCustomField.find_by_name('Attribute text').id] = attribute_text
+        script_run.attribute_text = attribute_text
 
         script_run.custom_field_values = field_values
         script_run.save!
