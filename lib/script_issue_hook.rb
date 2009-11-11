@@ -70,17 +70,18 @@ class ScriptIssueHook  < Redmine::Hook::ViewListener
       end
       return "<p>#{script_path_text_field}</p><p>#{identifier_text_field}</p>"
     when 'Script run'
+      status_done = context[:issue].status.name == 'Done'
       script_version_field = ''
       begin
         g =  Git.open(AppConfig['git_dir'] + context[:project].identifier)
         parent_issue = context[:issue].parent
         commits = g.gblob("#{parent_issue.identifier}/#{parent_issue.script_path}").log
-        script_version_field = context[:form].select :script_version, commits.collect {|v| [v.message, v.sha]}
+        script_version_field = context[:form].select(:script_version, commits.collect {|v| [v.message, v.sha]}, {:disabled => status_done ? 'restricted' : ''})
       rescue
-        script_version_field = context[:form].select :script_version, [[]]
+        script_version_field = context[:form].select(:script_version, [[]], {:disabled => status_done ? 'restricted' : ''})
       end
-      attribute_text_field = context[:form].text_area :attribute_text, :rows => 3, :style => 'width: 90%'
-      log_data_field = context[:form].text_area :log_data, :rows => 3, :style => 'width: 90%'
+      attribute_text_field = context[:form].text_area :attribute_text, :rows => 3, :style => 'width: 90%', :disabled => status_done ? 'disabled' : ''
+      log_data_field = context[:form].text_area :log_data, :rows => 3, :style => 'width: 90%', :disabled => status_done ? 'disabled' : ''
       return "<p>#{script_version_field}</p><p>#{attribute_text_field}</p><p>#{log_data_field}</p>"
     else
       return ''
