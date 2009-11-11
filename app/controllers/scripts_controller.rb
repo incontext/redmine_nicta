@@ -1,7 +1,7 @@
 class ScriptsController < ApplicationController
   unloadable
 
-  before_filter :find_project
+  before_filter :find_project, :authorize
   before_filter :define_git_repo
 
   def edit

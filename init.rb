@@ -24,6 +24,8 @@ Redmine::Plugin.register :redmine_nicta do
   author 'InContext'
   description 'This is a plugin for Nicta'
   version '0.0.5'
+
+  permission :access_experiment_scripts, :scripts => [:edit, :commit]
 end
 
 Redmine::MenuManager.map :project_menu do |menu|
