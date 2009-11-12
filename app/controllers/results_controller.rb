@@ -26,6 +26,7 @@ class ResultsController < ApplicationController
           script.author = user
           script.subject = outcome.at('id').innerHTML
           script.identifier = outcome.at('id').innerHTML
+          script.script_path = "#{outcome.at('id').innerHTML}.rb"
           script.tracker = Tracker.find_by_name('Script')
           field_values = [['Type', 'Wifi'], ['Batch', '0'], ['Resume', '0']].inject ({}) do |hash, field_value|
             field = IssueCustomField.find_by_name(field_value[0])
@@ -36,53 +37,44 @@ class ResultsController < ApplicationController
         end
 
         #Check script source
-        script_uri = outcome_script.at('uri').innerHTML
         script_source = outcome_script.at('source').innerHTML
-        script_version = outcome_script.at('revision').innerHTML
-
-        uri = URI.split(script_uri)
-        uri_project, uri_dir, uri_path = uri[5].scan(/(\w+)\.git\/(\w+)\/(.+)/)[0]
-        raise "Repository name doesn't match project identifier" if uri_project != project.identifier
-        raise "Directory name doesn't match experiment identifier" if uri_dir != script.identifier
-
-        script.script_path = uri_path
 
         g = Git.open(AppConfig['git_dir'] + project.identifier)
 
-        if g.lib.ls_files("#{uri_dir}/#{uri_path}").empty?
+        if g.lib.ls_files("#{script.identifier}/#{script.script_path}").empty?
           begin
             g.chdir do
-              dirname = File.dirname("#{uri_dir}/#{uri_path}")
+              dirname = File.dirname("#{script.identifier}/#{script.script_path}")
               File.makedirs dirname unless File.exist?(dirname)
-              f = File.new("#{uri_dir}/#{uri_path}", 'w')
+              f = File.new("#{script.identifier}/#{script.script_path}", 'w')
               f.write(script_source)
               f.close
-              g.add("#{uri_dir}/#{uri_path}")
+              g.add("#{script.identifier}/#{script.script_path}")
               g.commit_all("New file commited by http post at #{Time.now.to_s}")
             end
-            script_version = g.gblob("#{uri_dir}/#{uri_path}").log.first.sha
+            script_version = g.gblob("#{script.identifier}/#{script.script_path}").log.first.sha
           rescue => e
             g.reset_hard
             raise e.message
           end
         else
-          contents = g.gblob("HEAD:#{uri_dir}/#{uri_path}").contents
+          contents = g.gblob("HEAD:#{script.identifier}/#{script.script_path}").contents
           if contents != script_source
             begin
               g.chdir do
-                f = File.new("#{uri_dir}/#{uri_path}", 'w')
+                f = File.new("#{script.identifier}/#{script.script_path}", 'w')
                 f.write(script_source)
                 f.close
-                g.add("#{uri_dir}/#{uri_path}")
+                g.add("#{script.identifier}/#{script.script_path}")
                 g.commit_all("File updated by http post at #{Time.now.to_s}")
               end
-              script_version = g.gblob("#{uri_dir}/#{uri_path}").log.first.sha
+              script_version = g.gblob("#{script.identifier}/#{script.script_path}").log.first.sha
             rescue => e
               g.reset_hard
               raise e.message
             end
           else
-            script_version = g.gblob("#{uri_dir}/#{uri_path}").log.first.sha
+            script_version = g.gblob("#{script.identifier}/#{script.script_path}").log.first.sha
           end
         end
 

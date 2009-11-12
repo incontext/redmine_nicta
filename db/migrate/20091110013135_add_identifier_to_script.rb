@@ -1,6 +1,6 @@
 class AddIdentifierToScript < ActiveRecord::Migration
   def self.up
-    add_column :issues, :identifier, :string, :null => false
+    add_column :issues, :identifier, :string
   end
 
   def self.down
