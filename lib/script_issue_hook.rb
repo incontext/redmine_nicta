@@ -23,13 +23,20 @@ class ScriptIssueHook  < Redmine::Hook::ViewListener
       script_version = html_escape(context[:issue].script_version)
       if context[:issue].parent and context[:issue].parent.identifier and context[:issue].parent.script_path and script_version != ''
         data = "<tr><td><b>Script version :</b></td>"
-        data << "<td><a href= '/projects/#{context[:project].identifier}/scripts/#{script_version}/#{context[:issue].parent.identifier}/#{context[:issue].parent.script_path}'>#{script_version}</a></td></tr>"
+        begin
+          g = Git.open(AppConfig['git_dir'] + context[:project].identifier)
+          script_path = "#{context[:issue].parent.identifier}/#{context[:issue].parent.script_path}"
+          commits = g.gblob(script_path).log
+          data << "<td><a href= '/projects/#{context[:project].identifier}/scripts/#{script_version}/#{script_path}'>#{script_path} -- v #{commits.to_a.index {|v| v.sha == script_version} + 1}</a></td></tr>"
+        rescue => e
+          data << "<td>#{script_version} (#{e.message})</td>"
+        end
       else
         data = "<tr><td><b>Script version :</b></td><td>#{script_version}</td></tr>"
       end
 
       attribute_text = html_escape(context[:issue].attribute_text)
-      attribute_text_display = "<div style='height: 100px; overflow: auto;'><table width=100%>"
+      attribute_text_display = "<div style='height: 100px; overflow: auto;'><table width=50%>"
       display_content = attribute_text.split(',').inject '' do |str, v|
         v_pair = v.split(':')
         str << "<tr><td>#{v_pair[0]}</td><td>#{v_pair[1]}</td></tr>"
