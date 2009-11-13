@@ -107,6 +107,6 @@
 </p>
 <% end %>
 
-<%= call_hook(:view_issues_form_details_bottom, { :issue => @issue, :form => f }) %>
+<%= call_hook(:view_issues_form_details_bottom, { :issue => @issue, :form => f, :parent_issue => @parent_issue}) %>
 
 <%= wikitoolbar_for 'issue_description' %>
