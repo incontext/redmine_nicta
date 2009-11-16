@@ -26,13 +26,14 @@ class ScriptsController < ApplicationController
         f.write(params[:contents])
         f.close
         @repo.add(@filename)
-        @repo.commit_all(params[:message])
+        @repo.commit_all(params[:message] + " (updated by #{User.current.login} at #{Time.now.to_s})")
       end
       flash[:notice] = 'Script committed to repository'
       redirect_to "/projects/#{@project.identifier}/scripts/master/#{@filename}"
     rescue => e
       flash[:error] = e.message
       @repo.reset_hard
+      @issue = Issue.find_by_identifier(@filename.split('/').first) if @filename
       unless @repo.lib.ls_files(@filename).empty?
         @script = @repo.gblob("#{params[:version] || 'HEAD'}:#{@filename}")
         @commits = @repo.gblob(@filename).log
