@@ -6,6 +6,7 @@ class ScriptsController < ApplicationController
 
   def edit
     @filename = params[:script]
+    @issue = Issue.find_by_identifier(@filename.split('/').first) if @filename
     unless @repo.lib.ls_files(@filename).empty?
       @script = @repo.gblob("#{params[:version] || 'HEAD'}:#{@filename}")
       @commits = @repo.gblob(@filename).log

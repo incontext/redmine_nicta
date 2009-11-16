@@ -28,6 +28,7 @@
     <% end %>
   </div>
 </div>
+<p><a href=<%= "/issues/#{@issue.id}" %>>Back<a></p>
 <script type="text/javascript">
   var editor = CodeMirror.fromTextArea('contents', {
     parserfile: ["tokenizeruby.js", "parseruby.js"],
