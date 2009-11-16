@@ -10,7 +10,7 @@ class ScriptIssueHook  < Redmine::Hook::ViewListener
       script_path = html_escape(context[:issue].script_path)
       identifier = html_escape(context[:issue].identifier)
       data = "<td><b>Script path :</b></td>"
-      if context[:issue].identifier
+      if context[:issue].identifier and context[:project].git_repository
         data << "<td><a href= '/projects/#{context[:project].identifier}/scripts/master/#{context[:issue].identifier}/#{script_path}'>#{script_path}</a></td>"
       else
         data << "<td>#{script_path}</td>"
