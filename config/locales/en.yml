@@ -1,6 +1,5 @@
 # English strings go here for Rails i18n
 en:
-  my_label: "My label"
   subtasks_button_add_script_run: Add script run
   field_script_path: Script path
   field_script_version: Script version
