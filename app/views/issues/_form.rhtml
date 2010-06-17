@@ -1,17 +1,20 @@
-<% if @issue.new_record? %>
-  <% if @issue.tracker and @issue.tracker.name == 'Script run' %>
-    <p><%= f.select :tracker_id, [[@issue.tracker.name, @issue.tracker.id]], :required => true %></p>
-  <% else %>
-    <p><%= f.select :tracker_id, @project.trackers.collect {|t| [t.name, t.id]}, :required => true %></p>
-  <% end %>
-<%= observe_field :issue_tracker_id, :url => { :action => :new },
-                                     :update => :content,
+<div id="issue_descr_fields" <%= 'style="display:none"' unless @issue.new_record? || @issue.errors.any? %>>
+<p><%= f.select :tracker_id, @project.trackers.collect {|t| [t.name, t.id]}, :required => true %></p>
+<%= observe_field :issue_tracker_id, :url => { :action => :update_form, :project_id => @project, :id => @issue },
+                                     :update => :attributes,
                                      :with => "Form.serialize('issue-form')" %>
-<hr />
+
+<p><%= f.text_field :subject, :size => 80, :required => true %></p>
+
+<% unless (@issue.new_record? && @issue.parent_issue_id.nil?) || !User.current.allowed_to?(:manage_subtasks, @project) %>
+<p><%= f.text_field :parent_issue_id, :size => 10 %></p>
+<div id="parent_issue_candidates" class="autocomplete"></div>
+<%= javascript_tag "observeParentIssueField('#{url_for(:controller => :issues,
+                                                       :action => :auto_complete,
+                                                       :id => @issue,
+                                                       :project_id => @project) }')" %>
 <% end %>
 
-<div id="issue_descr_fields" <%= 'style="display:none"' unless @issue.new_record? || @issue.errors.any? %>>
-<p><%= f.text_field :subject, :size => 80, :required => true %></p>
 <p><%= f.text_area :description,
                    :cols => 60,
                    :rows => (@issue.description.blank? ? 10 : [[10, @issue.description.length / 50].max, 100].min),
@@ -19,94 +22,22 @@
                    :class => 'wiki-edit' %></p>
 </div>
 
-<div class="attributes">
-<div class="splitcontentleft">
-<% if (@issue.new_record? || @allowed_statuses.any?) %>
-<p><%= f.select :status_id, (@allowed_statuses.collect {|p| [p.name, p.id]}), :required => true %></p>
-<% else %>
-<p><label><%= l(:field_status) %></label> <%= @issue.status.name %></p>
-<% end %>
-
-<% unless ['Script', 'Script run'].include?(@issue.tracker.name) %>
-  <p><%= f.select :priority_id, (@priorities.collect {|p| [p.name, p.id]}), :required => true %></p>
-
-  <p><%= f.select :assigned_to_id, (@issue.assignable_users.collect {|m| [m.name, m.id]}), :include_blank => true %></p>
-  <% unless @project.issue_categories.empty? %>
-  <p><%= f.select :category_id, (@project.issue_categories.collect {|c| [c.name, c.id]}), :include_blank => true %>
-  <%= prompt_to_remote(l(:label_issue_category_new),
-                       l(:label_issue_category_new), 'category[name]',
-                       {:controller => 'projects', :action => 'add_issue_category', :id => @project},
-                       :class => 'small', :tabindex => 199) if authorize_for('projects', 'add_issue_category') %></p>
-  <% end %>
-  <%= content_tag('p', f.select(:fixed_version_id,
-                                (@project.versions.sort.collect {|v| [v.name, v.id]}),
-                                { :include_blank => true })) unless @project.versions.empty? %>
-<% end %>
-
-</div>
-
-<div class="splitcontentright">
-
-<% unless ['Script', 'Script run'].include?(@issue.tracker.name) %>
-  <% if @issue.new_record? ||  @issue.leaf? %>
-  <p><%= f.text_field :start_date, :size => 10 %><%= calendar_for('issue_start_date') %></p>
-  <p><%= f.text_field :due_date, :size => 10 %><%= calendar_for('issue_due_date') %></p>
-  <p><%= f.text_field :estimated_hours, :size => 3 %> <%= l(:field_hours) %></p>
-  <p><%= f.select :done_ratio, ((0..10).to_a.collect {|r| ["#{r*10} %", r*10] }) %></p>
-  <% else %>
-  <p><label><%= l(:field_start_date) %></label> <%= format_date(@issue.start_date) %></p>
-  <p><label><%= l(:field_due_date) %></label> <%= format_date(@issue.due_date) %></p>
-  <p><label><%= l(:field_done_ratio) %></label> <%= "#{@issue.done_ratio}%" %></p>
-  <% end %>
-<% end %>
-
-<%= content_tag( :input, {},
-		 :id => :issue_parent_id,
-		 :type => :hidden,
-		 :name => 'issue[parent_id]',
-		 :value => @parent_issue ? @parent_issue.id : "") %>
-<p><label><%= l(:subtasks_field_parent_issue) %></label>
-<% if authorize_for( 'issues', 'add_subissue') %>
-  <%= text_field_tag( 'parent_issue', '',
-		      :size => 20,
-		      :value => @parent_issue || "") %>
-	<%= link_to_function( "Remove",
-												"document.getElementById('issue_parent_id').value = 'root';
-                         document.getElementById('parent_issue').value = ''") %>
-  <div id="parent_issue_candidates" class="autocomplete"></div>
-  <%= javascript_tag "new Ajax.Autocompleter( 'parent_issue',
-                                              'parent_issue_candidates',
-                                              '#{controller.url_for(:controller => :issues,
-                                                                    :action => :auto_complete_for_issue_parent,
-                                                                    :project_id => @project.id) }',
-                                              { minChars: 1,
-                                                frequency: 0.5,
-                                                paramName: 'issue_parent',
-                                                afterUpdateElement: function(element, value) {
-                                                  document.getElementById('issue_parent_id').value = value.id;
-                                                }});" %>
-<% else %>
-  <%= @parent_issue || "-" %>
-<% end %>
-</p>
-</div>
-
-<div style="clear:both;"> </div>
-<%= render :partial => 'form_custom_fields' %>
+<div id="attributes" class="attributes">
+	<%= render :partial => 'attributes' %>
 </div>
 
 <% if @issue.new_record? %>
-<p><label><%=l(:label_attachment_plural)%></label><%= render :partial => 'attachments/form' %></p>
+<p><%= label_tag('attachments[1][file]', l(:label_attachment_plural))%><%= render :partial => 'attachments/form' %></p>
 <% end %>
 
 <% if @issue.new_record? && User.current.allowed_to?(:add_issue_watchers, @project) -%>
 <p><label><%= l(:label_issue_watchers) %></label>
 <% @issue.project.users.sort.each do |user| -%>
-<label class="floating"><%= check_box_tag 'issue[watcher_user_ids][]', user.id, @issue.watcher_user_ids.include?(user.id) %> <%=h user %></label>
+<label class="floating"><%= check_box_tag 'issue[watcher_user_ids][]', user.id, @issue.watched_by?(user) %> <%=h user %></label>
 <% end -%>
 </p>
 <% end %>
 
-<%= call_hook(:view_issues_form_details_bottom, { :issue => @issue, :form => f, :parent_issue => @parent_issue}) %>
+<%= call_hook(:view_issues_form_details_bottom, { :issue => @issue, :form => f }) %>
 
 <%= wikitoolbar_for 'issue_description' %>
