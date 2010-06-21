@@ -19,6 +19,9 @@ end
 require_dependency 'script_issue_hook'
 require_dependency 'git_project_hook'
 
+# Wiki Macros
+require_dependency 'wiki_experiment_macros'
+
 Redmine::Plugin.register :redmine_nicta do
   name 'Nicta Redmine plugin'
   author 'InContext'
