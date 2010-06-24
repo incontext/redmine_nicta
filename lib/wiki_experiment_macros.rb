@@ -11,34 +11,33 @@ module WikiExperimentMacros
   Redmine::WikiFormatting::Macros.register do
     desc "Displays a experiment form."
     macro :experiment_form do |obj, args|
-      #return unless @project
-
-      #out = []
-      #out << "<% form_for @experiment, :project_id => @project  do |f| %>"
-      #out << "<%= f.text_area(:content, :rows => 5, :cols => 70) %>"
-      #out << "<br />"
-      #out << "<%= submit_tag(l(:label_experiment_add)) %>"
-      #out << "<% end %>"
-      #out.join("\n")
       @project = Project.find(params[:id])
       @experiment = Experiment.new
-      view = ActionView::Base.new(ActionController::Base.view_paths, {})
-      class << view
-        include ApplicationHelper, FormHelper
+      return unless @project
+      div_id = "add_experiment_area"
+
+      url = url_for(:controller => 'wiki_extensions', :action => 'add_experiment', :id => @project)
+      o = ""
+      o << '<form method="post" action="' + url + '">'
+      o << "\n"
+      if protect_against_forgery?
+        o << hidden_field_tag(:authenticity_token, form_authenticity_token)
+        o << "\n"
       end
-      view.render(:file => "experiments/new.rhtml", :locals => {:project => @project, :experiment => @experiment})
+      o << text_area_tag(:experiment, '', :rows => 5, :cols => 70, :id => div_id,:accesskey => accesskey(:edit),
+                   :class => 'wiki-edit')
+      o << '<br/>'
+      o << submit_tag(l(:label_experiment_add))
+      o << "\n"
+      o << '</form>'
+      return o
     end
   end
 
   Redmine::WikiFormatting::Macros.register do
     desc "Display experiments of the page."
     macro :experiments do |obj, args|
-      unless User.current.allowed_to?({:controller => 'wiki_extensions', :action => 'show_experiments'}, @project)
-        return ''
-      end
-      page = obj.page
-      return unless page
-      data = page.wiki_extension_data
+      @project = Project.find(params[:id])
       comments = WikiExtensionsExperiment.find(:all, :conditions => ['wiki_page_id = (?)', page.id])
       o = "<h2>#{l(:field_experiments)}</h2>\n"
       comments.each{|comment|
