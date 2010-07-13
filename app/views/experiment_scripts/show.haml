@@ -1,0 +1,15 @@
+%h2
+  =h @experiment_script.script_file_name
+  == # Updated at:
+  =h @experiment_script.script_updated_at
+
+%p
+  Versions :
+  - versions = @experiment_script.versions
+  = select_tag :version, options_for_select(versions.each_with_index.map {|v, index| ["#{index + 1}: #{v.script_updated_at}", v.id] }, @experiment_script.id)
+  = submit_tag 'Load', :onclick => "window.location= '/experiment_scripts/' + $F('version') + '/edit';"
+
+= render :partial => 'common/file', :locals => {:content => @content, :filename => @experiment_script.script_file_name}
+
+- content_for :header_tags do
+  = stylesheet_link_tag "scm"

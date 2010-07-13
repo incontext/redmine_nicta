@@ -9,3 +9,5 @@ en:
   label_experiment_new: New experiment
   label_subtask_plural: Script runs
   label_experiment_add: Add experiment
+  label_experiment_script_plural: Experiment scripts
+  label_experiment_script_add: Add experiment script

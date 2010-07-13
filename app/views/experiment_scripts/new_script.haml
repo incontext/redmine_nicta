@@ -1,0 +1,22 @@
+= javascript_include_tag 'codemirror/codemirror.js', :plugin => 'redmine_nicta'
+%h2
+  = "New Script"
+- form_tag('/scripts/commit') do
+= text_area_tag :contents
+Commit message:
+= text_field_tag :message
+= hidden_field_tag :project_id, @project.identifier
+= hidden_field_tag :script, @filename
+= submit_tag 'Commit'
+- end
+%script{ :type => "text/javascript" }
+  var editor = CodeMirror.fromTextArea('contents', {
+  parserfile: ["tokenizeruby.js", "parseruby.js"],
+  stylesheet: "/plugin_assets/redmine_nicta/stylesheets/codemirror/rubycolors.css",
+  path: "/plugin_assets/redmine_nicta/javascripts/codemirror/",
+  lineNumbers: false,
+  textWrapping: false,
+  indentUnit: 2,
+  parserConfig: {},
+  height: '400px'
+  });
