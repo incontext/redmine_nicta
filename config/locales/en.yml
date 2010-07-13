@@ -5,9 +5,11 @@ en:
   field_script_version: Script version
   field_attribute_text: Attribute text
   field_log_data: Log data
+  field_experiment_script: Experiment script
   label_experiment_plural: Experiments
   label_experiment_new: New experiment
   label_subtask_plural: Script runs
   label_experiment_add: Add experiment
   label_experiment_script_plural: Experiment scripts
   label_experiment_script_add: Add experiment script
+  label_reservation_plural: Reservations

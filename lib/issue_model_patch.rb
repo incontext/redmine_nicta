@@ -11,7 +11,8 @@ module IssueModelPatch
       validates_uniqueness_of :identifier, :scope => :project_id unless 'identifier.nil?'
       validates_format_of :identifier, :with => /^[A-Za-z0-9]+$/ unless 'identifier.nil?'
       after_create :assign_identifier_and_script_path
-      after_create :create_event
+      #after_create :create_event
+      belongs_to :experiment_script
     end
 
   end

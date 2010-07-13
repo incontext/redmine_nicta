@@ -1,0 +1,20 @@
+%h2 New reservation
+
+- form_for @reservation do |f|
+  .box
+    = f.hidden_field :project_id
+    = f.hidden_field :all_day
+    %p
+      = f.label 'Resource'
+      = f.text_field :resource
+    %p
+      = f.label 'Start at'
+      = f.text_field :start_at
+      = calendar_for('reservation_start_at')
+    %p
+      = f.label 'End at'
+      = f.text_field :end_at
+      = calendar_for('reservation_end_at')
+  = submit_tag 'Save'
+  = link_to 'Cancel', :back
+

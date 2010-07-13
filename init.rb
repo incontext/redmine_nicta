@@ -30,8 +30,10 @@ Redmine::Plugin.register :redmine_nicta do
   version '0.1.0'
 
   menu :application_menu, :experiment_scripts, { :controller => 'experiment_scripts', :action => 'index' }, :caption => :label_experiment_script_plural
+  menu :project_menu, :reservations, { :controller => 'reservations', :action => 'index' }, :param => :project_id, :caption => :label_reservation_plural
   permission :access_experiment_scripts, :experiment_scripts => [:new]
   permission :access_scripts, :scripts => [:edit, :commit]
+  permission :reservations, :reservations => [:new, :index, :create]
 end
 
 Redmine::MenuManager.map :project_menu do |menu|
