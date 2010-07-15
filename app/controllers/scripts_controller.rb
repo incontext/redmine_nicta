@@ -7,11 +7,12 @@ class ScriptsController < ApplicationController
   def edit
     @filename = params[:script]
     @issue = Issue.find_by_identifier(@filename.split('/').first) if @filename
-    unless @repo.lib.ls_files(@filename).empty?
-      @script = @repo.gblob("#{params[:version] || 'HEAD'}:#{@filename}")
-      @commits = @repo.gblob(@filename).log
-      @commit = @commits.find {|v| v.sha == params[:version]} || @commits.first
-      @contents = params[:contents] || @script.contents
+    tree = @repo.tree("#{params[:version] || 'HEAD'}", @filename)
+    unless tree.contents.empty?
+      @script = tree.contents.first
+      @commits = @repo.log('HEAD', @filename)
+      @commit = @commits.find {|v| v.sha == params[:version].to_s} || @commits.first
+      @contents = params[:contents] || @script.data
     end
   end
 
@@ -47,7 +48,7 @@ class ScriptsController < ApplicationController
   private
 
   def define_git_repo
-    @repo = Git.open(AppConfig['git_dir'] + @project.identifier)
+    @repo = Grit::Repo.new(NICTA['git_dir'] + @project.identifier)
   end
 
   def find_project
