@@ -1,6 +1,4 @@
 require 'redmine'
-require 'paperclip'
-require 'git'
 require 'ftools'
 require 'dispatcher'
 
