@@ -91,12 +91,12 @@ class ScriptIssueHook  < Redmine::Hook::ViewListener
     #when 'Experiment run'
     scripts = ExperimentScript.all
     experiment_script_field = context[:form].select :experiment_script_id, scripts.each.collect {|v, index| ["#{v.script_file_name} #{v.script_updated_at}", v.id]}
-    define_attributes(File.new(scripts.first.script.path, 'r').readlines)
+    #define_attributes(File.new(scripts.first.script.path, 'r').readlines)
 
     form_fields = [experiment_script_field]
-    experiment_properties.each do |p|
-      form_fields << label_tag(p[0]) + text_field_tag("issue[attribute_text][#{p[0]}]", p[1])
-    end
+    #experiment_properties.each do |p|
+    #  form_fields << label_tag(p[0]) + text_field_tag("issue[attribute_text][#{p[0]}]", p[1])
+    #end
     return form_fields.map {|v| "<p>#{v}</p>"}.join('')
   end
 

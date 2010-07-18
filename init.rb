@@ -27,17 +27,17 @@ Redmine::Plugin.register :redmine_nicta do
   description 'This is a experiement management plugin for Nicta'
   version '0.1.0'
 
-  menu :application_menu, :experiment_scripts, { :controller => 'experiment_scripts', :action => 'index' }, :caption => :label_experiment_script_plural
-  menu :project_menu, :reservations, { :controller => 'reservations', :action => 'index' }, :param => :project_id, :caption => :label_reservation_plural
-  permission :access_experiment_scripts, :experiment_scripts => [:new]
-  permission :access_scripts, :scripts => [:edit, :commit]
+  menu :project_menu, :reservations, {:controller => 'reservations', :action => 'index'}, :caption => :label_reservation_plural
+  menu :project_menu, :experiments, {:controller => 'experiments', :action => 'index'}, :param => :project_id, :caption => :label_experiment_plural
+
+  permission :access_experiments, :experiments => [:new, :index, :edit, :create, :commit]
   permission :reservations, :reservations => [:new, :index, :create]
 end
 
-Redmine::MenuManager.map :project_menu do |menu|
+#Redmine::MenuManager.map :project_menu do |menu|
   #menu.delete :issues
   #menu.delete :new_issue
   #menu.push :issues, { :controller => 'issues', :action => 'index' }, :param => :project_id, :caption => :label_experiment_plural, :after => :roadmap
   #menu.push :new_issue, { :controller => 'issues', :action => 'new' }, :param => :project_id, :caption => :label_experiment_new, :before => :news,
   #            :html => { :accesskey => Redmine::AccessKeys.key_for(:new_issue) }
-end
+#end

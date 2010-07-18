@@ -1,0 +1,18 @@
+= render :partial => 'contextual'
+%h2 Experiments
+- if @experiments.empty?
+  %p.nodata
+    No experiments found
+- else
+  .autoscroll
+    %table.list
+      %tr
+        %th Identifier
+        %th Experiment Type
+        %th Script
+      - @experiments.each_with_index do |experiment, index|
+        %tr.issue{:class => index % 2 == 0 ? 'odd' : 'even'}
+          %td.subject
+            = experiment.identifier
+          %td= experiment.experiment_type
+          %td= link_to experiment.script_path, edit_experiment_url(experiment, :project_id => @project)

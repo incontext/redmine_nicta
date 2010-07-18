@@ -1,0 +1,13 @@
+= render :partial => 'contextual'
+%h2 New experiment
+
+- form_for :experiment, :url => {:action => 'create', :project_id => @project}, :html => {:class => 'tabular'} do
+  - fields_for :experiment, @experiment, :builder => TabularFormBuilder do |f|
+    = error_messages_for :experiment
+    .box
+      %p
+        = f.text_field :identifier, :required => true
+      %p
+        = f.select :experiment_type, NICTA['experiment_types'], :required => true
+  = submit_tag
+  = link_to 'Cancel', :back
