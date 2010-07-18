@@ -21,13 +21,19 @@ module ProjectModelPatch
 
     def init_git_repository
       begin
-        g = Git.init(AppConfig['git_dir'] + identifier) if git_repository
-        g.chdir do
-          f = File.open('README', 'w')
-          f.write('Git repository for project: ' + identifier)
-          f.close
-          g.add('README')
-          g.commit('Initial commit for project: ' + identifier)
+        if git_repository
+          unless File.exist?(NICTA['git_dir'] + identifier + '/.git')
+            FileUtils.mkdir_p(NICTA['git_dir'] + identifier)
+            Dir.chdir(NICTA['git_dir'] + identifier) do
+              system "git init" unless File.exist?(NICTA['git_dir'] + identifier + '/.git')
+              g = Grit::Repo.new('.')
+              f = File.open('README', 'w')
+              f.write('Git repository for project: ' + identifier)
+              f.close
+              g.add('README')
+              g.commit_index('Initial commit for project: ' + identifier)
+            end
+          end
         end
       rescue => e
         logger.error e.message
