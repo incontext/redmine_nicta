@@ -9,6 +9,7 @@ module ProjectModelPatch
     base.class_eval do
       unloadable # Send unloadable so it will not be unloaded in development
       has_many :experiments
+      has_many :reservations
       after_save :init_git_repository
     end
 

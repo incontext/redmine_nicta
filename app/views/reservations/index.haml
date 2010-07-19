@@ -1,5 +1,43 @@
-= stylesheet_link_tag "event_calendar"
+= stylesheet_link_tag 'weekly'
 
-%h3 Reservation calendar
+.contextual
+  = link_to l(:label_reservation_add), new_reservation_url(:project_id => @project), :class => 'icon icon-add'
 
-= event_calendar
+%h3 Reservations
+
+- weekly_calendar(@reservations, :date => @date, :include_24_hours => true, :param => {:project_id => @project.identifier} ) do |w|
+  - w.week(:project => @project, :business_hours => params[:business_hours], :clickable_hours => false) do |reservation, truncate|
+    - display_text = "#{reservation.resource} <br />#{reservation.starts_at.strftime('%H:%M:%S')}"
+    = link_to display_text , edit_reservation_url(reservation, :project_id => @project)
+
+%br
+
+- if @reservations.empty?
+  %p.nodata
+    No reservations found
+- else
+  .autoscroll
+    %table.list
+      %tr
+        %th Resource
+        %th Time
+        %th Submitted by
+        %th Status
+        %th
+      - @reservations.each_with_index do |r, index|
+        %tr.issue{:class => index % 2 == 0 ? 'odd' : 'even'}
+          %td.subject
+            = r.resource
+          %td
+            = r.starts_at.strftime('%Y-%m-%d %H:%M:%S')
+            \-
+            = r.ends_at.strftime('%Y-%m-%d %H:%M:%S')
+          %td= r.user.name if r.user
+          %td= r.status.upcase
+          %td
+            = link_to 'Approve', approve_reservation_url(r, :project_id => @project), :method => :put
+            |
+            = link_to 'Deny', reservation_url(r, :project_id => @project), :method => :delete
+            |
+            = link_to 'Change', edit_reservation_url(r, :project_id => @project)
+

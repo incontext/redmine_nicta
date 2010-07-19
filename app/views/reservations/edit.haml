@@ -1,6 +1,6 @@
-%h2 New reservation
+%h2 Edit reservation
 
-- form_for :reservation, :url => {:action => 'create', :project_id => @project}, :html => {:class => 'tabular'} do
+- form_for :reservation, :url => {:action => 'update', :project_id => @project}, :html => {:method => :put, :class => 'tabular'} do
   - fields_for :reservation, @reservation, :builder => TabularFormBuilder do |f|
     = error_messages_for :reservation
     .box
