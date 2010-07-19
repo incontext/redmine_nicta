@@ -11,8 +11,7 @@ module IssueModelPatch
       validates_uniqueness_of :identifier, :scope => :project_id unless 'identifier.nil?'
       validates_format_of :identifier, :with => /^[A-Za-z0-9]+$/ unless 'identifier.nil?'
       after_create :assign_identifier_and_script_path
-      #after_create :create_event
-      belongs_to :experiment_script
+      belongs_to :experiment
     end
 
   end
@@ -26,11 +25,10 @@ module IssueModelPatch
     def assign_identifier_and_script_path
       self.identifier ||= "script#{id}"
       self.script_path ||= "script#{id}.rb"
+      repo = Grit::Repo.new(NICTA['git_dir'] + project.identifier)
+      log = repo.log('HEAD', experiment.script_path)
+      self.experiment_version = log.first.sha
       self.save!
-    end
-
-    def create_event
-      Event.create!(:name => subject, :start_at => Time.zone.now, :end_at => 2.hours.from_now)
     end
   end
 end

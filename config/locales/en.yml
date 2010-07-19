@@ -3,10 +3,10 @@ en:
   subtasks_button_add_script_run: Add script run
   field_script_path: Script path
   field_script_version: Script version
-  field_attribute_text: Attribute text
+  field_experiment_attributes: Experiment Attribute
   field_experiment_type: Experiment Types
   field_log_data: Log data
-  field_experiment_script: Experiment script
+  field_experiment: Experiment
   field_resource: Resource
   field_starts_at: Starts at
   field_ends_at: Ends at
