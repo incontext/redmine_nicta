@@ -2,7 +2,9 @@ class ExperimentsController < ApplicationController
   unloadable
 
   before_filter :find_project, :authorize
-  before_filter :define_git_repo, :only => [:edit, :commit]
+  before_filter :define_git_repo, :only => [:edit, :commit, :change_experiment]
+
+  attr_accessor :experiment_properties
 
   def index
     @experiments = @project.experiments.all
@@ -59,7 +61,36 @@ class ExperimentsController < ApplicationController
     end
   end
 
+  def change_experiment
+    @experiment = Experiment.find(params[:experiment_id])
+    @script_path = @experiment.script_path
+    tree = @repo.tree('HEAD', @script_path)
+    define_attributes(tree.contents.first.data)
+    form_fields = ""
+    render :update do |page|
+      @experiment_properties.each do |p|
+        form_fields << "<p>"
+        form_fields << label_tag(p[0]) + text_field_tag("issue[experiment_attributes][#{p[0]}]", p[1])
+        form_fields << "</p>"
+      end
+      page.replace_html "experiment_properties", form_fields
+    end
+  end
+
   private
+
+  def define_attributes(content)
+    self.experiment_properties = []
+    content.each do |line|
+      if line =~ /^\s*defProperty\('.*'\)/
+        eval(line)
+      end
+    end
+  end
+
+  def defProperty(name, default, desc)
+    self.experiment_properties << [name, default]
+  end
 
   def define_git_repo
     @repo = Grit::Repo.new(NICTA['git_dir'] + @project.identifier)

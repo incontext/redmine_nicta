@@ -31,7 +31,7 @@ Redmine::Plugin.register :redmine_nicta do
   menu :project_menu, :reservations, {:controller => 'reservations', :action => 'index'}, :param => :project_id, :caption => :label_reservation_plural
   menu :project_menu, :experiments, {:controller => 'experiments', :action => 'index'}, :param => :project_id, :caption => :label_experiment_plural
 
-  permission :access_experiments, :experiments => [:new, :index, :edit, :create, :commit]
+  permission :access_experiments, :experiments => [:new, :index, :edit, :create, :commit, :change_experiment]
   permission :reservations, :reservations => [:new, :index, :create, :update, :edit, :approve, :destroy]
 end
 

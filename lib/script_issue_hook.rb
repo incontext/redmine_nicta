@@ -3,6 +3,10 @@ class ScriptIssueHook  < Redmine::Hook::ViewListener
 
   attr_accessor :experiment_properties
 
+  def protect_against_forgery?
+    false
+  end
+
   # Context:
   # * :issue => Issue being rendered
   #
@@ -36,11 +40,18 @@ class ScriptIssueHook  < Redmine::Hook::ViewListener
 
     define_attributes(tree.contents.first.data)
 
-    form_fields = [experiment_field]
+    form_fields = "<p>#{experiment_field}</p>"
+    form_fields << "<div id = 'experiment_properties'>"
     experiment_properties.each do |p|
+      form_fields << "<p>"
       form_fields << label_tag(p[0]) + text_field_tag("issue[experiment_attributes][#{p[0]}]", p[1])
+      form_fields << "</p>"
     end
-    return form_fields.map {|v| "<p>#{v}</p>"}.join('')
+    form_fields << "</div>"
+    experiment_observer = observe_field(
+      "issue_experiment_id",
+      :url=>{:controller=>:experiments, :action=>:change_experiment, :project_id => context[:project]}, :with => 'experiment_id')
+    return form_fields + experiment_observer
   end
 
   private
