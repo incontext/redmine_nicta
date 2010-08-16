@@ -43,7 +43,7 @@ class ExperimentsController < ApplicationController
     @script_path = @experiment.script_path
 
     begin
-      Dir.chdir(NICTA['git_dir'] + @project.identifier) do
+      Dir.chdir(AppConfig.git_dir + @project.identifier) do
         f = File.open(@script_path, 'w')
         f.write(params[:script_content])
         f.close
@@ -53,7 +53,7 @@ class ExperimentsController < ApplicationController
       flash[:notice] = 'Experiment script committed to repository'
       redirect_to experiments_url(:project_id => @project)
     rescue => e
-      Dir.chdir(NICTA['git_dir'] + @project.identifier) do
+      Dir.chdir(AppConfig.git_dir + @project.identifier) do
         system "git reset --hard"
       end
       flash[:error] = 'Failed to commit changes.' + e.message
@@ -93,7 +93,7 @@ class ExperimentsController < ApplicationController
   end
 
   def define_git_repo
-    @repo = Grit::Repo.new(NICTA['git_dir'] + @project.identifier)
+    @repo = Grit::Repo.new(AppConfig.git_dir + @project.identifier)
   end
 
   def find_project

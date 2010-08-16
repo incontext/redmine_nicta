@@ -48,7 +48,7 @@ class ScriptsController < ApplicationController
   private
 
   def define_git_repo
-    @repo = Grit::Repo.new(NICTA['git_dir'] + @project.identifier)
+    @repo = Grit::Repo.new(AppConfig.git_dir + @project.identifier)
   end
 
   def find_project

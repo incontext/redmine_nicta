@@ -25,7 +25,7 @@ module IssueModelPatch
     def assign_identifier_and_script_path
       self.identifier ||= "script#{id}"
       self.script_path ||= "script#{id}.rb"
-      repo = Grit::Repo.new(NICTA['git_dir'] + project.identifier)
+      repo = Grit::Repo.new(AppConfig.git_dir + project.identifier)
       log = repo.log('HEAD', experiment.script_path)
       self.experiment_version = log.first.sha
       self.save!

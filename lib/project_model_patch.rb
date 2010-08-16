@@ -24,10 +24,10 @@ module ProjectModelPatch
     def init_git_repository
       begin
         if git_repository
-          unless File.exist?(NICTA['git_dir'] + identifier + '/.git')
-            FileUtils.mkdir_p(NICTA['git_dir'] + identifier)
-            Dir.chdir(NICTA['git_dir'] + identifier) do
-              system "git init" unless File.exist?(NICTA['git_dir'] + identifier + '/.git')
+          unless File.exist?(AppConfig.git_dir + identifier + '/.git')
+            FileUtils.mkdir_p(AppConfig.git_dir + identifier)
+            Dir.chdir(AppConfig.git_dir + identifier) do
+              system "git init" unless File.exist?(AppConfig.git_dir + identifier + '/.git')
               g = Grit::Repo.new('.')
               f = File.open('README', 'w')
               f.write('Git repository for project: ' + identifier)

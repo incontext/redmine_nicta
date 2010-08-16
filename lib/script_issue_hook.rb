@@ -35,7 +35,7 @@ class ScriptIssueHook  < Redmine::Hook::ViewListener
     experiments = context[:project].experiments
     experiment_field = context[:form].select :experiment_id, (experiments.each.collect {|v, index| ["#{v.identifier}", v.id]}), :required => true
 
-    repo = Grit::Repo.new(NICTA['git_dir'] + context[:project].identifier)
+    repo = Grit::Repo.new(AppConfig.git_dir + context[:project].identifier)
     tree = repo.tree('HEAD', experiments.first.script_path)
 
     define_attributes(tree.contents.first.data)

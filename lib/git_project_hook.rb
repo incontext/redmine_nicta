@@ -3,7 +3,7 @@ class GitProjectHook  < Redmine::Hook::ViewListener
   # Context :project, :form
   def view_projects_form(context = {})
     begin
-      g = Grit::Repo.new(NICTA['git_dir'] + context[:project].identifier)
+      g = Grit::Repo.new(AppConfig.git_dir + context[:project].identifier)
       html = "<p><label for='create git repository'>Git repository path</label>#{g.git.work_tree}</p>"
     rescue
       html = "<p>
