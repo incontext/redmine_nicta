@@ -1,17 +1,4 @@
 %h2 New reservation
 
 - form_for :reservation, :url => {:action => 'create', :project_id => @project}, :html => {:class => 'tabular'} do
-  - fields_for :reservation, @reservation, :builder => TabularFormBuilder do |f|
-    = error_messages_for :reservation
-    .box
-      %p
-        = f.select :resource, AppConfig.resources, :required => true
-      %p
-        = f.text_field :starts_at, :required => true
-        = time_calendar_for('reservation_starts_at')
-      %p
-        = f.text_field :ends_at, :required => true
-        = time_calendar_for('reservation_ends_at')
-  = submit_tag 'Save'
-  = link_to 'Cancel', :back
-
+  = render :partial => 'form'

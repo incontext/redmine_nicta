@@ -1,43 +1,57 @@
-= stylesheet_link_tag 'weekly'
+= javascript_include_tag 'jquery-1.4.2.js', :plugin => 'redmine_nicta'
+= javascript_include_tag 'jquery.tools.min.js', :plugin => 'redmine_nicta'
+= stylesheet_link_tag 'reservations', :plugin => 'redmine_nicta'
+%script
+  jQuery.noConflict();
 
 .contextual
-  = link_to l(:label_reservation_add), new_reservation_url(:project_id => @project), :class => 'icon icon-add'
+  = link_to l(:label_reservation_add), new_reservation_url, :class => 'icon icon-add'
 
 %h3 Reservations
 
-- weekly_calendar(@reservations, :date => @date, :include_24_hours => true, :param => {:project_id => @project.identifier} ) do |w|
-  - w.week(:project => @project, :business_hours => params[:business_hours], :clickable_hours => false) do |reservation, truncate|
-    - display_text = "#{reservation.resource} <br />#{reservation.starts_at.strftime('%H:%M:%S')}"
-    = link_to display_text , edit_reservation_url(reservation, :project_id => @project)
+%ul.tabs
+  %li= link_to 'List', '#list'
+  %li= link_to 'Calendar', '#calendar'
 
-%br
+.panes
+  .pane.list
+    - if @reservations.empty?
+      %p.nodata
+        No reservations found
+    - else
+      .autoscroll
+        %table.list
+          %tr
+            %th Resource
+            %th Project
+            %th Time
+            %th Submitted by
+            %th Status
+            %th
+          - @reservations.each_with_index do |r, index|
+            %tr.issue{:class => index % 2 == 0 ? 'odd' : 'even'}
+              %td.subject
+                = r.resource
+              %td.subject
+                = Project.find(r.project_id).name
+              %td
+                = r.starts_at.strftime('%Y-%m-%d %H:%M:%S')
+                \-
+                = r.ends_at.strftime('%Y-%m-%d %H:%M:%S')
+              %td= r.user.name if r.user
+              %td= r.status.upcase
+              %td
+                = link_to 'Approve', approve_reservation_url(r, :project_id => @project), :method => :put
+                |
+                = link_to 'Deny', reservation_url(r, :project_id => @project), :method => :delete
+                |
+                = link_to 'Change', edit_reservation_url(r, :project_id => @project)
 
-- if @reservations.empty?
-  %p.nodata
-    No reservations found
-- else
-  .autoscroll
-    %table.list
-      %tr
-        %th Resource
-        %th Time
-        %th Submitted by
-        %th Status
-        %th
-      - @reservations.each_with_index do |r, index|
-        %tr.issue{:class => index % 2 == 0 ? 'odd' : 'even'}
-          %td.subject
-            = r.resource
-          %td
-            = r.starts_at.strftime('%Y-%m-%d %H:%M:%S')
-            \-
-            = r.ends_at.strftime('%Y-%m-%d %H:%M:%S')
-          %td= r.user.name if r.user
-          %td= r.status.upcase
-          %td
-            = link_to 'Approve', approve_reservation_url(r, :project_id => @project), :method => :put
-            |
-            = link_to 'Deny', reservation_url(r, :project_id => @project), :method => :delete
-            |
-            = link_to 'Change', edit_reservation_url(r, :project_id => @project)
+  .pane.calendar
+    %iframe{:src=> AppConfig.gcal.calendars.first.private_address, :style=>" border-width:0 ", :width=>"100%", :height=>"600", :frameborder=>"0"}
 
+%script
+  jQuery(function() {
+  // setup ul.tabs to work as tabs for each div directly under div.panes
+  jQuery("ul.tabs").tabs("div.panes > div.pane");
+  });
