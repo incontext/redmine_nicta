@@ -18,6 +18,7 @@ end
 require_dependency 'script_issue_hook'
 require_dependency 'git_project_hook'
 require_dependency 'experiment_issue_hook'
+require_dependency 'user_project_hook'
 
 # Wiki Macros
 require_dependency 'wiki_experiment_macros'
