@@ -38,7 +38,7 @@
                 = r.starts_at.strftime('%Y-%m-%d %H:%M:%S')
                 \-
                 = r.ends_at.strftime('%Y-%m-%d %H:%M:%S')
-              %td= r.user.name if r.user
+              %td= User.find(r.user_id).name if r.user_id
               %td= r.status.upcase
               %td
                 = link_to 'Approve', approve_reservation_url(r, :project_id => @project), :method => :put

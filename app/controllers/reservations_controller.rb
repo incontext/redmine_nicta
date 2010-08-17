@@ -57,4 +57,10 @@ class ReservationsController < ApplicationController
       render :template => 'reservations/new'
     end
   end
+
+  private
+
+  def find_reservation
+    @reservation = Reservation.find(params[:id])
+  end
 end

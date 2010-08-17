@@ -23,7 +23,7 @@ class Reservation < ActiveRecord::Base
   def add_to_google_calendar
     service = Service.new
     service.authenticate(AppConfig.gcal.account, AppConfig.gcal.password)
-    calendar = Calendar.find(gservice, {:id => AppConfig.gcal.calendars.first.identifier})
+    calendar = Calendar.find(service, {:id => AppConfig.gcal.calendars.first.identifier})
     event = Event.new(service, {
       :calendar => calendar,
       :title => "#{resource} - #{user.name}",
