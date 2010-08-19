@@ -32,7 +32,7 @@ class ExperimentsController < ApplicationController
     tree = @repo.tree("#{params[:version] || 'HEAD'}", @script_path)
     unless tree.contents.empty?
       @script = tree.contents.first
-      @commits = @repo.log('HEAD', @script_path)
+      @commits = @experiment.commits
       @commit = @commits.find {|v| v.sha == params[:version].to_s} || @commits.first
       @content = @script.data
     end

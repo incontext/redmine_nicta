@@ -16,13 +16,15 @@ class ScriptIssueHook  < Redmine::Hook::ViewListener
     log_data = html_escape(context[:issue].log_data)
     experiment = context[:issue].experiment
     if experiment
-      experiment_attributes = YAML::load(context[:issue].experiment_attributes)
       details = ""
-      details <<  "<table class='attributes'>"
-      experiment_attributes.each_pair do |k, v|
-        details << "<tr><th>#{k}</th><td>#{v}</td></tr>"
+      if context[:issue].experiment_attributes
+        experiment_attributes = YAML::load(context[:issue].experiment_attributes)
+        details <<  "<table class='attributes'>"
+        experiment_attributes.each_pair do |k, v|
+          details << "<tr><th>#{k}</th><td>#{v}</td></tr>"
+        end
       end
-      details << "<tr><th>Experiment script</th><td>#{experiment.script_path if experiment}</td></tr>"
+      details << "<tr><th>Experiment script</th><td>#{experiment.script_path}</td></tr>"
       details << "<tr><th>Experiment version</th><td>#{context[:issue].experiment_version}</td></tr>"
       details << "</table>"
       return details
@@ -38,13 +40,14 @@ class ScriptIssueHook  < Redmine::Hook::ViewListener
 
     if !experiments.empty?
       experiment_field = context[:form].select :experiment_id, (experiments.each.collect {|v, index| ["#{v.identifier}", v.id]}), :required => true
+      experiment_version_field = context[:form].select :experiment_version, (experiments.first.commits.each.collect {|v| v.sha}), :required => true
 
       repo = Grit::Repo.new(AppConfig.git_dir + context[:project].identifier)
       tree = repo.tree('HEAD', experiments.first.script_path)
 
       define_attributes(tree.contents.first.data)
 
-      form_fields = "<p>#{experiment_field}</p>"
+      form_fields = "<p>#{experiment_field}</p><p>#{experiment_version_field}</p>"
       form_fields << "<div id = 'experiment_properties'>"
       experiment_properties.each do |p|
         form_fields << "<p>"

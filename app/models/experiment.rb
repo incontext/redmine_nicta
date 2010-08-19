@@ -10,8 +10,11 @@ class Experiment < ActiveRecord::Base
   end
 
   def script_committed?
+    return !commits.empty?
+  end
+
+  def commits
     repo = Grit::Repo.new(AppConfig.git_dir + project.identifier)
-    tree = repo.tree("HEAD", script_path)
-    return !tree.contents.empty?
+    repo.log('HEAD', script_path)
   end
 end

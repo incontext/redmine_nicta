@@ -10,9 +10,10 @@
         %th Identifier
         %th Experiment Type
         %th Script
+        %th Latest commit
       - @experiments.each_with_index do |experiment, index|
         %tr.issue{:class => index % 2 == 0 ? 'odd' : 'even'}
-          %td.subject
-            = experiment.identifier
+          %td.subject= experiment.identifier
           %td= experiment.experiment_type
-          %td= link_to experiment.script_path, edit_experiment_url(experiment, :project_id => @project)
+          %td.subject= link_to experiment.script_path, edit_experiment_url(experiment, :project_id => @project)
+          %td.subject= experiment.commits.first.sha
