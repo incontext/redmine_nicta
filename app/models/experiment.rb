@@ -8,4 +8,10 @@ class Experiment < ActiveRecord::Base
   def script_path
     "#{identifier}.rb"
   end
+
+  def script_committed?
+    repo = Grit::Repo.new(AppConfig.git_dir + project.identifier)
+    tree = repo.tree("HEAD", script_path)
+    return !tree.contents.empty?
+  end
 end

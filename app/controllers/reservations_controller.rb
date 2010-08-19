@@ -1,6 +1,7 @@
 class ReservationsController < ApplicationController
   unloadable
 
+  before_filter :authorize_global
   before_filter :find_reservation, :only => [:update, :edit, :destroy, :deny, :approve]
 
   def new

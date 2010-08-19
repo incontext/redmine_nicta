@@ -10,7 +10,7 @@ module IssueModelPatch
       unloadable # Send unloadable so it will not be unloaded in development
       validates_uniqueness_of :identifier, :scope => :project_id unless 'identifier.nil?'
       validates_format_of :identifier, :with => /^[A-Za-z0-9]+$/ unless 'identifier.nil?'
-      after_create :assign_identifier_and_script_path
+      after_create :assign_identifier_and_script_path unless 'experiment.nil?'
       belongs_to :experiment
     end
 

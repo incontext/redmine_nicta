@@ -26,7 +26,7 @@
 	<%= render :partial => 'attributes' %>
 </div>
 <% if User.current.allowed_to?(:add_issues, @project) && User.current.allowed_to?(:add_private_issues, @project) %>
-<p><%=f.check_box :is_private %></p>
+  <p><%=f.check_box :is_private, :checked => true %></p>
 <% end %>
 
 <% if @issue.new_record? %>
