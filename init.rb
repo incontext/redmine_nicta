@@ -15,7 +15,6 @@ Dispatcher.to_prepare do
 end
 
 # Hooks
-require_dependency 'script_issue_hook'
 require_dependency 'git_project_hook'
 require_dependency 'experiment_issue_hook'
 require_dependency 'user_project_hook'
