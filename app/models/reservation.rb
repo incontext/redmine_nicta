@@ -32,4 +32,8 @@ class Reservation < ActiveRecord::Base
       :where => resource})
     event.save
   end
+
+  def print
+    "#{resource} #{starts_at.strftime('%Y-%m-%d %H:%M:%S')}-#{ends_at.strftime('%Y-%m-%d %H:%M:%S')}"
+  end
 end

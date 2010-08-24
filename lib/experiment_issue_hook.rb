@@ -18,7 +18,8 @@ class ExperimentIssueHook < Redmine::Hook::ViewListener
     identifier = html_escape(context[:issue].identifier)
     log_data = html_escape(context[:issue].log_data)
     experiment = context[:issue].experiment
-    if experiment
+    reservation = context[:issue].reservation
+    if experiment && reservation
       details = javascript_include_tag('dygraph-combined.js', :plugin => 'redmine_nicta')
       details << stylesheet_link_tag('graph', :plugin => 'redmine_nicta')
       if context[:issue].experiment_attributes
@@ -30,6 +31,7 @@ class ExperimentIssueHook < Redmine::Hook::ViewListener
       end
       details << "<tr><th>Experiment script</th><td>#{experiment.script_path}</td></tr>"
       details << "<tr><th>Experiment version</th><td>#{context[:issue].experiment_version}</td></tr>"
+      details << "<tr><th>Reservation</th><td>#{reservation.print}</td></tr>"
       details << "</table>"
       #render sqlite3 result
       context[:issue].attachments.find_all {|v| v.filename =~ /\.sq3$/}.each do |attachment|
@@ -45,18 +47,20 @@ class ExperimentIssueHook < Redmine::Hook::ViewListener
   #
   def view_issues_form_details_bottom(context = { })
     experiments = context[:project].committed_experiments
+    reservations = context[:project].available_reservations
 
-    if !experiments.empty?
-      experiment_field = context[:form].select :experiment_id, (experiments.each.collect {|v, index| ["#{v.identifier}", v.id]}), :required => true
+    if !experiments.empty? && !reservations.empty?
+      experiment_field = context[:form].select :experiment_id, (experiments.collect {|v| ["#{v.identifier}", v.id]}), :required => true
       experiment = context[:issue].experiment || experiments.first
       experiment_version_field = context[:form].select :experiment_version, (experiment.commits.collect {|v| v.sha}), :required => true
+      reservation_field = context[:form].select :reservation_id, (reservations.collect {|v| [v.print, v.id]}), :required => true
 
       repo = Grit::Repo.new(AppConfig.git_dir + context[:project].identifier)
       tree = repo.tree('HEAD', experiment.script_path)
 
       define_attributes(tree.contents.first.data)
 
-      form_fields = "<p>#{experiment_field}</p><p>#{experiment_version_field}</p>"
+      form_fields = "<p>#{reservation_field}</p><p>#{experiment_field}</p><p>#{experiment_version_field}</p>"
       form_fields << "<div id = 'experiment_properties'>"
       experiment_properties.each do |p|
         form_fields << "<p>"
@@ -80,6 +84,7 @@ class ExperimentIssueHook < Redmine::Hook::ViewListener
     context[:issue].experiment_attributes  = context[:params][:issue][:experiment_attributes]
     context[:issue].experiment_id  = context[:params][:issue][:experiment_id]
     context[:issue].experiment_version  = context[:params][:issue][:experiment_version]
+    context[:issue].reservation_id  = context[:params][:issue][:reservation_id]
   end
 
   def controller_issues_new_before_save(context)
