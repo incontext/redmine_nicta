@@ -48,10 +48,11 @@ class ExperimentIssueHook < Redmine::Hook::ViewListener
 
     if !experiments.empty?
       experiment_field = context[:form].select :experiment_id, (experiments.each.collect {|v, index| ["#{v.identifier}", v.id]}), :required => true
-      experiment_version_field = context[:form].select :experiment_version, (experiments.first.commits.each.collect {|v| v.sha}), :required => true
+      experiment = context[:issue].experiment || experiments.first
+      experiment_version_field = context[:form].select :experiment_version, (experiment.commits.collect {|v| v.sha}), :required => true
 
       repo = Grit::Repo.new(AppConfig.git_dir + context[:project].identifier)
-      tree = repo.tree('HEAD', experiments.first.script_path)
+      tree = repo.tree('HEAD', experiment.script_path)
 
       define_attributes(tree.contents.first.data)
 
@@ -66,7 +67,12 @@ class ExperimentIssueHook < Redmine::Hook::ViewListener
       experiment_observer = observe_field(
         "issue_experiment_id",
         :url=>{:controller=>:experiments, :action=>:change_experiment, :project_id => context[:project]}, :with => 'experiment_id')
-      return form_fields + experiment_observer
+      experiment_version_observer = observe_field(
+        "issue_experiment_version",
+        :url=>{:controller=>:experiments, :action=>:change_experiment_version, :project_id => context[:project]},
+        :with => "'experiment_id=' + $('issue_experiment_id').value + '&experiment_version=' + value"
+      )
+      return form_fields + experiment_observer + experiment_version_observer
     end
   end
 
