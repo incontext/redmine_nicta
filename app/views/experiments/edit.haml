@@ -19,6 +19,9 @@
       = submit_tag 'Load', :onclick => "window.location= '/experiments/#{@experiment.id}/edit?project_id=#{@project.identifier}&version=' + $F('version');"
 
   - form_tag(:controller => :experiments, :action => :commit, :id => @experiment.id, :project_id => @project.id) do
+    - if @commit
+      %b Commit SHA:
+      = @commit.sha
     .box
       %p
         = text_area_tag :script_content, @content
