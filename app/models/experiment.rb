@@ -18,14 +18,14 @@ class Experiment < ActiveRecord::Base
     repo.log('HEAD', script_path)
   end
 
-  def copy_to_project(source_experiment)
+  def copy_to_project(source_experiment, version = "HEAD")
     destination_project = project
     source_project = source_experiment.project
 
     destination_repo = Grit::Repo.new(AppConfig.git_dir + destination_project.identifier)
     source_repo = Grit::Repo.new(AppConfig.git_dir + source_project.identifier)
 
-    source_tree = source_repo.tree("HEAD", source_experiment.script_path)
+    source_tree = source_repo.tree(version, source_experiment.script_path)
     script_content = source_tree.contents.first.data unless source_tree.contents.empty?
 
     begin

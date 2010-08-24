@@ -90,7 +90,7 @@ class ExperimentIssueHook < Redmine::Hook::ViewListener
       target_experiment.project = target_project
       target_experiment.experiment_type = source_experiment.experiment_type
       target_experiment.user = User.current
-      target_experiment = target_experiment.copy_to_project(source_experiment)
+      target_experiment = target_experiment.copy_to_project(source_experiment, issue.experiment_version)
       issue.experiment_id = target_experiment.id
       issue.experiment_version = target_experiment.commits.first.sha if target_experiment.script_committed?
     end
