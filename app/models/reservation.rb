@@ -17,7 +17,7 @@ class Reservation < ActiveRecord::Base
   end
 
   aasm_event :deny do
-    transitions :to => :denied, :from => [:pending, :approved]
+    transitions :to => :denied, :from => :pending
   end
 
   def add_to_google_calendar

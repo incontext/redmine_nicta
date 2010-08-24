@@ -27,7 +27,7 @@
             %th Time
             %th Submitted by
             %th Status
-            %th
+            %th Action
           - @reservations.each_with_index do |r, index|
             %tr.issue{:class => index % 2 == 0 ? 'odd' : 'even'}
               %td.subject
@@ -41,11 +41,14 @@
               %td= User.find(r.user_id).name if r.user_id
               %td= r.status.upcase
               %td
-                = link_to 'Approve', approve_reservation_url(r, :project_id => @project), :method => :put
-                |
-                = link_to 'Deny', reservation_url(r, :project_id => @project), :method => :delete
-                |
-                = link_to 'Change', edit_reservation_url(r, :project_id => @project)
+                - if User.current.allowed_to?({:controller => 'reservations', :action => 'approve'}, nil, :global => true) && r.pending?
+                  = link_to 'Approve', approve_reservation_url(r, :project_id => @project), :method => :put
+                  |
+                - if User.current.allowed_to?({:controller => 'reservations', :action => 'destroy'}, nil, :global => true) && r.pending?
+                  = link_to 'Deny', reservation_url(r, :project_id => @project), :method => :delete
+                  |
+                - if User.current.allowed_to?({:controller => 'reservations', :action => 'edit'}, nil, :global => true) && r.pending?
+                  = link_to 'Change', edit_reservation_url(r, :project_id => @project)
 
   .pane.calendar
     %iframe{:src=> AppConfig.gcal.calendars.first.private_address, :style=>" border-width:0 ", :width=>"100%", :height=>"600", :frameborder=>"0"}
