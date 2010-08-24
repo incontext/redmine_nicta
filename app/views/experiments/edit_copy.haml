@@ -1,0 +1,14 @@
+= render :partial => 'contextual'
+%h2 Copy experiment
+
+- form_for :experiment, :url => {:action => 'copy', :project_id => @project}, :html => {:class => 'tabular'} do
+  - fields_for :experiment, @experiment, :builder => TabularFormBuilder do |f|
+    = error_messages_for :experiment
+    .box
+      %p
+        = f.text_field :identifier, :required => true
+      = f.hidden_field :experiment_type
+      %p
+        = f.select :project_id, (User.current.projects-[@project]).map {|v| [v.name, v.id]}, :required => true
+  = submit_tag 'Copy'
+  = link_to 'Cancel', :back

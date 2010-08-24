@@ -11,9 +11,12 @@
         %th Experiment Type
         %th Script
         %th Latest commit
+        %th Copy experiment
       - @experiments.each_with_index do |experiment, index|
         %tr.issue{:class => index % 2 == 0 ? 'odd' : 'even'}
           %td.subject= experiment.identifier
           %td= experiment.experiment_type
           %td.subject= link_to experiment.script_path, edit_experiment_url(experiment, :project_id => @project)
-          %td.subject= experiment.commits.first.sha
+          %td.subject= experiment.commits.first.sha if experiment.script_committed?
+          %td= link_to 'Copy', edit_copy_experiment_url(experiment, :project_id => @project), :class => 'icon icon-copy' if experiment.script_committed?
+

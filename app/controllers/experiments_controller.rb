@@ -2,7 +2,7 @@ class ExperimentsController < ApplicationController
   unloadable
 
   before_filter :find_project, :authorize
-  before_filter :define_git_repo, :only => [:edit, :commit, :change_experiment]
+  before_filter :define_git_repo, :only => [:edit, :commit, :change_experiment, :copy]
 
   attr_accessor :experiment_properties
 
@@ -35,6 +35,44 @@ class ExperimentsController < ApplicationController
       @commits = @experiment.commits
       @commit = @commits.find {|v| v.sha == params[:version].to_s} || @commits.first
       @content = @script.data
+    end
+  end
+
+  def edit_copy
+    @experiment = Experiment.find(params[:id])
+  end
+
+  def copy
+    @old_experiment = Experiment.find(params[:id])
+    @experiment = Experiment.new(params[:experiment])
+    @experiment.user = find_current_user
+    @new_project = @experiment.project
+
+    tree = @repo.tree("HEAD", @old_experiment.script_path)
+    @content = tree.contents.first.data unless tree.contents.empty?
+
+    @new_repo = Grit::Repo.new(AppConfig.git_dir + @new_project.identifier)
+    begin
+      Dir.chdir(AppConfig.git_dir + @new_project.identifier) do
+        f = File.open(@experiment.script_path, 'w')
+        f.write(@content)
+        f.close
+        @new_repo.add(@experiment.script_path)
+        @new_repo.commit_index("Copied from #{@project.identifier} (updated by #{User.current.login} at #{Time.now.to_s})")
+      end
+      begin
+        @experiment.save!
+        flash[:notice] = 'Experiment copied successfully'
+      rescue => e
+        flash[:error] = 'Failed to copy experiment' + e.message
+      end
+      redirect_to experiments_url(:project_id => @project)
+    rescue => e
+      Dir.chdir(AppConfig.git_dir + @experiment.project.identifier) do
+        system "git reset --hard"
+      end
+      flash[:error] = 'Failed to copy experiment' + e.message
+      redirect_to experiments_url(:project_id => @project)
     end
   end
 
