@@ -76,10 +76,18 @@ class ExperimentIssueHook < Redmine::Hook::ViewListener
     end
   end
 
-  def controller_issues_new_before_save(context)
+  def set_experiment_properties(context)
     context[:issue].experiment_attributes  = context[:params][:issue][:experiment_attributes]
     context[:issue].experiment_id  = context[:params][:issue][:experiment_id]
     context[:issue].experiment_version  = context[:params][:issue][:experiment_version]
+  end
+
+  def controller_issues_new_before_save(context)
+    set_experiment_properties(context)
+  end
+
+  def controller_issues_edit_before_save(context)
+    set_experiment_properties(context)
   end
 
   #controller_issues_move_before_save, { :params => params, :issue => issue, :target_project => @target_project, :copy => !!@copy })
