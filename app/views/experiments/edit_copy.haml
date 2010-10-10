@@ -1,5 +1,5 @@
 = render :partial => 'contextual'
-%h2 Copy experiment
+%h2= l(:label_experiment_copy)
 
 - form_for :experiment, :url => {:action => 'copy', :project_id => @project}, :html => {:class => 'tabular'} do
   - fields_for :experiment, @experiment, :builder => TabularFormBuilder do |f|

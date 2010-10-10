@@ -7,14 +7,19 @@ en:
   field_experiment_version: Experiment Version
   field_experiment_type: Experiment Types
   field_log_data: Log data
-  field_experiment: Experiment
+  field_experiment: OEDL Script
   field_reservation: Reservation
   field_resource: Resource
   field_starts_at: Starts at
   field_ends_at: Ends at
 
-  label_experiment_plural: Experiments
-  label_experiment_new: New Experiment
-  label_experiment_add: Add Experiment
+  label_experiment_plural: OEDL Scripts
+  label_experiment_new: New OEDL Script
+  label_experiment_add: Add OEDL Script
+  label_experiment_copy: Copy OEDL Script
   label_reservation_plural: Reservations
   label_reservation_add: Add Reservation
+
+  label_issue: Experiment
+  label_issue_new: New experiment
+  label_issue_plural: Experiments

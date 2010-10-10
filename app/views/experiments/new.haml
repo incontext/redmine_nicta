@@ -1,5 +1,5 @@
 = render :partial => 'contextual'
-%h2 New experiment
+%h2= l(:label_experiment_new)
 
 - form_for :experiment, :url => {:action => 'create', :project_id => @project}, :html => {:class => 'tabular'} do
   - fields_for :experiment, @experiment, :builder => TabularFormBuilder do |f|
