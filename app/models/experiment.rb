@@ -54,4 +54,12 @@ class Experiment < ActiveRecord::Base
       return target_experiment
     end
   end
+
+  def print(sha)
+    local_commits = commits
+    return nil if local_commits.empty?
+    commit = local_commits.find {|v| v.sha == sha}
+    return nil if commit.nil?
+    "#{local_commits.size - local_commits.index(commit)}: #{commit.message}"
+  end
 end

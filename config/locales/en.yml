@@ -4,7 +4,7 @@ en:
   field_script_path: Script path
   field_script_version: Script version
   field_experiment_attributes: Experiment Attribute
-  field_experiment_version: Experiment Version
+  field_experiment_version: OEDL Script Version
   field_experiment_type: Experiment Types
   field_log_data: Log data
   field_experiment: OEDL Script
@@ -13,6 +13,8 @@ en:
   field_starts_at: Starts at
   field_ends_at: Ends at
 
+  label_experiment_version: OEDL Script Version
+  label_experiment: OEDL Script
   label_experiment_plural: OEDL Scripts
   label_experiment_new: New OEDL Script
   label_experiment_add: Add OEDL Script

@@ -29,8 +29,8 @@ class ExperimentIssueHook < Redmine::Hook::ViewListener
           details << "<tr><th>#{k}</th><td>#{v}</td></tr>"
         end
       end
-      details << "<tr><th>Experiment script</th><td>#{experiment.script_path}</td></tr>"
-      details << "<tr><th>Experiment version</th><td>#{context[:issue].experiment_version}</td></tr>"
+      details << "<tr><th>#{l(:label_experiment)}</th><td>#{experiment.script_path}</td></tr>"
+      details << "<tr><th>#{l(:label_experiment_version)}</th><td>#{experiment.print(context[:issue].experiment_version)}</td></tr>"
       details << "<tr><th>Reservation</th><td>#{reservation.print}</td></tr>"
       details << "</table>"
       #render sqlite3 result
@@ -52,7 +52,9 @@ class ExperimentIssueHook < Redmine::Hook::ViewListener
     if !experiments.empty? && !reservations.empty?
       experiment_field = context[:form].select :experiment_id, (experiments.collect {|v| ["#{v.identifier}", v.id]}), :required => true
       experiment = context[:issue].experiment || experiments.first
-      experiment_version_field = context[:form].select :experiment_version, (experiment.commits.collect {|v| v.sha}), :required => true
+      commits = experiment.commits
+      experiment_version_field = context[:form].select :experiment_version, (commits.map {|v| ["#{commits.size - commits.index(v)}: #{v.message}", v.sha]}), :required => true
+
       reservation_field = context[:form].select :reservation_id, (reservations.collect {|v| [v.print, v.id]}), :required => true
 
       repo = Grit::Repo.new(AppConfig.git_dir + context[:project].identifier)

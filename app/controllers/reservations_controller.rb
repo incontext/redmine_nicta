@@ -1,11 +1,11 @@
 class ReservationsController < ApplicationController
   unloadable
 
-  before_filter :authorize_global
+  before_filter :find_project, :authorize
   before_filter :find_reservation, :only => [:update, :edit, :destroy, :deny, :approve]
 
   def new
-    @reservation = Reservation.new
+    @reservation = Reservation.new(:project_id => @project)
   end
 
   def edit
@@ -23,7 +23,7 @@ class ReservationsController < ApplicationController
   def destroy
     if @reservation.deny!
       flash[:notice] = 'Reservation denied successfully'
-      redirect_to reservations_url
+      redirect_to reservations_url(:project_id => @project)
     else
       flash[:error] = 'Failed to deny reservation'
       redirect_to :back
@@ -33,7 +33,7 @@ class ReservationsController < ApplicationController
   def approve
     if @reservation.approve!
       flash[:notice] = 'Reservation approved successfully'
-      redirect_to reservations_url
+      redirect_to reservations_url(:project_id => @project)
     else
       flash[:error] = 'Failed to approve reservation'
       redirect_to :back
@@ -53,7 +53,7 @@ class ReservationsController < ApplicationController
     @reservation.user = find_current_user
     if @reservation.save
       flash[:notice] = 'Reservation created successfully'
-      redirect_to reservations_url
+      redirect_to reservations_url(:project_id => @project)
     else
       render :template => 'reservations/new'
     end
@@ -63,5 +63,11 @@ class ReservationsController < ApplicationController
 
   def find_reservation
     @reservation = Reservation.find(params[:id])
+  end
+
+  def find_project
+    @project = Project.find(params[:project_id])
+  rescue ActiveRecord::RecordNotFound
+    render_404
   end
 end
