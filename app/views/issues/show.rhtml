@@ -16,39 +16,6 @@
         </p>
 
 <table class="attributes">
-<tr>
-    <th class="status"><%=l(:field_status)%>:</th><td class="status"><%= @issue.status.name %></td>
-    <% unless ['Script', 'Script run'].include?(@issue.tracker.name) %>
-    <th class="start-date"><%=l(:field_start_date)%>:</th><td class="start-date"><%= format_date(@issue.start_date) %></td>
-    <% end %>
-</tr>
-
-<% unless ['Script', 'Script run'].include?(@issue.tracker.name) %>
-<tr>
-    <th class="priority"><%=l(:field_priority)%>:</th><td class="priority"><%= @issue.priority.name %></td>
-    <th class="due-date"><%=l(:field_due_date)%>:</th><td class="due-date"><%= format_date(@issue.due_date) %></td>
-</tr>
-<tr>
-    <th class="assigned-to"><%=l(:field_assigned_to)%>:</th><td class="assigned-to"><%= avatar(@issue.assigned_to, :size => "14") %><%= @issue.assigned_to ? link_to_user(@issue.assigned_to) : "-" %></td>
-    <th class="progress"><%=l(:field_done_ratio)%>:</th><td class="progress"><%= progress_bar @issue.done_ratio, :width => '80px', :legend => "#{@issue.done_ratio}%" %></td>
-</tr>
-<tr>
-    <th class="category"><%=l(:field_category)%>:</th><td class="category"><%=h @issue.category ? @issue.category.name : "-" %></td>
-    <% if User.current.allowed_to?(:view_time_entries, @project) %>
-    <th class="spent-time"><%=l(:label_spent_time)%>:</th>
-    <td class="spent-time"><%= @issue.spent_hours > 0 ? (link_to l_hours(@issue.spent_hours), {:controller => 'timelog', :action => 'index', :project_id => @project, :issue_id => @issue}) : "-" %></td>
-    <% end %>
-</tr>
-<tr>
-    <th class="fixed-version"><%=l(:field_fixed_version)%>:</th><td class="fixed-version"><%= @issue.fixed_version ? link_to_version(@issue.fixed_version) : "-" %></td>
-    <% if @issue.estimated_hours %>
-    <th class="estimated-hours"><%=l(:field_estimated_hours)%>:</th><td class="estimated-hours"><%= l_hours(@issue.estimated_hours) %></td>
-    <% end %>
-    <% if @issue.is_private %>
-    <th class="private-issue"><%=l(:field_is_private)%>:</th><td class="private-issue"><%=l(:general_text_Yes)%></td>
-    <% end %>
-</tr>
-<% end %>
 <%= render_custom_fields_rows(@issue) %>
 <%= call_hook(:view_issues_show_details_bottom, :issue => @issue) %>
 </table>
@@ -66,24 +33,6 @@
 <%= link_to_attachments @issue %>
 
 <%= call_hook(:view_issues_show_description_bottom, :issue => @issue) %>
-
-<% if !@issue.leaf? || (User.current.allowed_to?(:manage_subtasks, @project) and @issue.tracker.name != 'Script run') %>
-<hr />
-<div id="issue_tree">
-<div class="contextual">
-  <%= link_to(l(:button_add), {:controller => 'issues', :action => 'new', :project_id => @project, :issue => {:tracker_id => Tracker.find_by_name('Script run'), :parent_issue_id => @issue}}) if User.current.allowed_to?(:manage_subtasks, @project) %>
-</div>
-<p><strong><%=l(:label_subtask_plural)%></strong></p>
-<%= render_descendants_tree(@issue) unless @issue.leaf? %>
-</div>
-<% end %>
-
-<% if authorize_for('issue_relations', 'new') || @issue.relations.present? %>
-<hr />
-<div id="relations">
-<%= render :partial => 'relations' %>
-</div>
-<% end %>
 
 </div>
 
@@ -122,13 +71,6 @@
 
 <% content_for :sidebar do %>
   <%= render :partial => 'issues/sidebar' %>
-
-  <% if User.current.allowed_to?(:add_issue_watchers, @project) ||
-    (@issue.watchers.present? && User.current.allowed_to?(:view_issue_watchers, @project)) %>
-    <div id="watchers">
-      <%= render :partial => 'watchers/watchers', :locals => {:watched => @issue} %>
-    </div>
-  <% end %>
 <% end %>
 
 <% content_for :header_tags do %>
