@@ -2,7 +2,8 @@ class ExperimentsController < ApplicationController
   unloadable
 
   before_filter :find_project, :authorize
-  before_filter :define_git_repo, :only => [:edit, :commit, :change_experiment, :change_experiment_version, :copy]
+  before_filter :find_experiment, :authorize, :only => [:show, :edit, :edit_copy, :commit]
+  before_filter :define_git_repo, :only => [:show, :edit, :commit, :change_experiment, :change_experiment_version, :copy]
 
   attr_accessor :experiment_properties
 
@@ -14,20 +15,34 @@ class ExperimentsController < ApplicationController
     @experiment = Experiment.new(:project_id => @project)
   end
 
+  def show
+    tree = @repo.tree("#{params[:version] || 'HEAD'}", @experiment.script_path)
+    unless tree.contents.empty?
+      @script = tree.contents.first
+      @commits = @experiment.commits
+      @commit = @commits.find {|v| v.sha == params[:version].to_s} || @commits.first
+      @content = @script.data
+    end
+    if @content.nil?
+      render_404
+    else
+      send_data @content, :filename => @experiment.script_path
+    end
+  end
+
   def create
     @experiment = Experiment.new(params[:experiment])
     @experiment.project = @project
     @experiment.user = find_current_user
     if @experiment.save
       flash[:notice] = 'Experiment created successfully'
-      redirect_to experiments_url(:project_id => @project)
+      redirect_to project_experiments_path(@project)
     else
       render :template => 'experiments/new'
     end
   end
 
   def edit
-    @experiment = Experiment.find(params[:id])
     @script_path = @experiment.script_path
     tree = @repo.tree("#{params[:version] || 'HEAD'}", @script_path)
     unless tree.contents.empty?
@@ -39,7 +54,6 @@ class ExperimentsController < ApplicationController
   end
 
   def edit_copy
-    @experiment = Experiment.find(params[:id])
     unique_identifier = "#{@project.identifier}_#{@experiment.identifier}"
     @experiment.identifier = unique_identifier
   end
@@ -54,11 +68,10 @@ class ExperimentsController < ApplicationController
     rescue => e
       flash[:error] = 'Failed to copy experiment' + e.message
     end
-    redirect_to experiments_url(:project_id => @project)
+    redirect_to project_experiments_path(@project)
   end
 
   def commit
-    @experiment = Experiment.find(params[:id])
     @script_path = @experiment.script_path
 
     begin
@@ -76,7 +89,7 @@ class ExperimentsController < ApplicationController
         system "git reset --hard"
       end
       flash[:error] = 'Failed to commit changes.' + e.message
-      redirect_to edit_experiment_url(@experiment, :project_id => @project)
+      redirect_to edit_project_experiments_path(@project, @experiment)
     end
   end
 
@@ -134,6 +147,12 @@ class ExperimentsController < ApplicationController
 
   def find_project
     @project = Project.find(params[:project_id])
+  rescue ActiveRecord::RecordNotFound
+    render_404
+  end
+
+  def find_experiment
+    @experiment = Experiment.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render_404
   end

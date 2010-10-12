@@ -16,7 +16,7 @@
         Versions :
       - versions = @commits
       = select_tag :version, options_for_select(versions.each_with_index.map {|v, index| ["#{@commits.size - index}: #{v.message}", v.sha] }, (@commit ? @commit.sha : nil))
-      = submit_tag 'Load', :onclick => "window.location= '/experiments/#{@experiment.id}/edit?project_id=#{@project.identifier}&version=' + $F('version');"
+      = submit_tag 'Load', :onclick => "window.location= '#{edit_project_experiment_path(@project, @experiment)}?version=' + $F('version');"
 
   - form_tag(:controller => :experiments, :action => :commit, :id => @experiment.id, :project_id => @project.id) do
     - if @commit
