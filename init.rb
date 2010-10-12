@@ -8,16 +8,18 @@ require 'dispatcher'
 # Patches
 require_dependency 'project_model_patch'
 require_dependency 'issue_model_patch'
+require_dependency 'issues_controller_patch'
 
 Dispatcher.to_prepare do
   Project.send(:include, ProjectModelPatch)
   Issue.send(:include, IssueModelPatch)
+  IssuesController.send(:include, IssuesControllerPatch)
 end
 
 # Hooks
-require_dependency 'git_project_hook'
-require_dependency 'experiment_issue_hook'
-require_dependency 'user_project_hook'
+require_dependency 'redmine_nicta/git_project_hook'
+require_dependency 'redmine_nicta/experiment_issue_hook'
+require_dependency 'redmine_nicta/user_project_hook'
 
 # Wiki Macros
 require_dependency 'wiki_experiment_macros'

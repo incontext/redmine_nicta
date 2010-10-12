@@ -1,31 +1,31 @@
 = javascript_include_tag 'codemirror/codemirror.js', :plugin => 'redmine_nicta'
 
 %h2
-  = "#{@experiment.identifier} / #{@script_path}"
+  = "#{@experiment.identifier} / #{@experiment.script_path}"
 .content
-  - if @commits
+  - if @experiment.script_committed?
     %p
       %b Latest commit:
-      = "#{@commit ? @commit.message : 'New script'}"
+      = @experiment.revision.message
     %p
       %b
-        Number of commits:
-      = @commits.size
+        Number of revisions:
+      = @experiment.revisions.size
     %p
       %b
-        Versions :
+        Revisions :
       - versions = @commits
-      = select_tag :version, options_for_select(versions.each_with_index.map {|v, index| ["#{@commits.size - index}: #{v.message}", v.sha] }, (@commit ? @commit.sha : nil))
+      = select_tag :version, options_for_select(@experiment.revisions.map {|v| [@experiment.pretty_commit_id(v.sha), v.sha] }, @revision.sha)
       = submit_tag 'Load', :onclick => "window.location= '#{edit_project_experiment_path(@project, @experiment)}?version=' + $F('version');"
 
   - form_tag(:controller => :experiments, :action => :commit, :id => @experiment.id, :project_id => @project.id) do
-    - if @commit
-      %b Commit SHA:
-      = @commit.sha
+    - if @revision
+      %b SHA:
+      = @revision.sha
     .box
       %p
-        = text_area_tag :script_content, @content
-    = hidden_field_tag :latest_commit_id, @commit ? @commit.sha : nil
+        = text_area_tag :script_content, @experiment.script_content(params[:version])
+    = hidden_field_tag :latest_commit_id, @revision && @revision.sha
     = text_field_tag :message, @message || 'Default Commit Message'
     = submit_tag 'Commit'
     This will create a new version

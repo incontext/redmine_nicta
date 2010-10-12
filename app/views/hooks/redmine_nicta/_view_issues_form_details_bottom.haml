@@ -1,0 +1,19 @@
+- experiments = project.committed_experiments
+- reservations = project.available_reservations
+
+- if !experiments.empty? && !reservations.empty?
+  %p= form.select :reservation_id, reservations.map {|v| [v.print, v.id]}, :required => true
+  %p= form.select :experiment_id, experiments.map {|v| [v.identifier, v.id]}, :required => true
+  - experiment = issue.experiment || experiments.first
+  %p= form.select :experiment_version, experiment.revisions.map {|v| [experiment.pretty_commit_id(v.sha), v.sha]}, :required => true
+
+  #experiment_properties
+    - experiment.define_attributes(experiment.script_content(issue.experiment_version))
+    - experiment.experiment_properties.each do |p|
+      %p
+        = label_tag(p[0])
+        = text_field_tag("issue[experiment_attributes[#{p[0]}]", p[1])
+
+  = observe_field("issue_experiment_id", :url=>{:controller=>:experiments, :action=>:change_experiment, :project_id => project}, :with => 'id')
+  = observe_field("issue_experiment_version", :url=>{:controller=>:experiments, :action=>:change_experiment_version, :project_id => project}, :with => "'id=' + $('issue_experiment_id').value + '&version=' + value")
+

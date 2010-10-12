@@ -1,0 +1,22 @@
+- if issue.experiment && issue.reservation
+  = javascript_include_tag('dygraph-combined.js', :plugin => 'redmine_nicta')
+  = stylesheet_link_tag('graph', :plugin => 'redmine_nicta')
+  - if issue.experiment_attributes
+    %table.attributes
+      - YAML::load(issue.experiment_attributes).each_pair do |k, v|
+        %tr
+          %th= k
+          %td= v
+      %tr
+        %th= l(:label_experiment)
+        %td= issue.experiment.script_path
+      %tr
+        %th= l(:label_experiment_version)
+        %td= issue.experiment.pretty_commit_id(issue.experiment_version)
+      %tr
+        %th Reservation
+        %td= issue.reservation.print
+
+  - issue.attachments.find_all {|v| v.filename =~ /\.sq3$/}.each do |attachment|
+    = render_sqlite_graph(attachment.diskfile)
+

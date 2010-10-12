@@ -6,19 +6,21 @@
 - else
   .autoscroll
     %table.list
-      %tr
-        %th Identifier
-        %th Experiment Type
-        %th Script
-        %th Latest commit
-        %th= l(:label_experiment_manage)
-      - @experiments.each_with_index do |experiment, index|
-        %tr.issue{:class => index % 2 == 0 ? 'odd' : 'even'}
-          %td.subject= experiment.identifier
-          %td= experiment.experiment_type
-          %td.subject= link_to experiment.script_path, project_experiment_url(@project, experiment)
-          %td.subject= experiment.commits.first.sha if experiment.script_committed?
-          %td
-            = link_to 'Copy', edit_copy_project_experiment_path(@project, experiment), :class => 'icon icon-copy' if experiment.script_committed?
-            = link_to 'Edit', edit_project_experiment_path(@project, experiment), :class => 'icon icon-edit'
+      %thead
+        %tr
+          %th Identifier
+          %th Experiment Type
+          %th Latest revision id
+          %th= l(:label_experiment_manage)
+          %th Download
+      %tbody
+        - @experiments.each_with_index do |experiment, index|
+          %tr.issue{:class => index % 2 == 0 ? 'odd' : 'even'}
+            %td.subject= experiment.identifier
+            %td= experiment.experiment_type
+            %td.subject= experiment.revision.sha if experiment.script_committed?
+            %td
+              = link_to 'Copy', edit_copy_project_experiment_path(@project, experiment), :class => 'icon icon-copy' if experiment.script_committed?
+              = link_to 'Edit', edit_project_experiment_path(@project, experiment), :class => 'icon icon-edit'
+            %td.subject= link_to experiment.script_path, project_experiment_url(@project, experiment)
 
