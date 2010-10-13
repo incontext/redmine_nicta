@@ -15,7 +15,7 @@
           %th Download
       %tbody
         - @experiments.each_with_index do |experiment, index|
-          %tr.issue{:class => index % 2 == 0 ? 'odd' : 'even'}
+          %tr.issue.priority-1{:class => index % 2 == 0 ? 'odd' : 'even'}
             %td.subject= experiment.identifier
             %td= experiment.experiment_type
             %td.subject= experiment.revision.sha if experiment.script_committed?
