@@ -18,9 +18,9 @@
           %tr.issue.priority-1{:class => index % 2 == 0 ? 'odd' : 'even'}
             %td.subject= experiment.identifier
             %td= experiment.experiment_type
-            %td.subject= experiment.revision.sha if experiment.script_committed?
+            %td= experiment.revision.sha if experiment.script_committed?
             %td
               = link_to 'Copy', edit_copy_project_experiment_path(@project, experiment), :class => 'icon icon-copy' if experiment.script_committed?
               = link_to 'Edit', edit_project_experiment_path(@project, experiment), :class => 'icon icon-edit'
-            %td.subject= link_to experiment.script_path, project_experiment_url(@project, experiment)
+            %td.subject= link_to experiment.script_path, "/projects/#{@project.identifier}/oedl/#{experiment.id}/#{experiment.revision.sha}"
 

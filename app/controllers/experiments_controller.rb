@@ -13,8 +13,8 @@ class ExperimentsController < ApplicationController
   end
 
   def show
-    @version = params[:version] || 'HEAD'
-    script_content = @experiment.script_content(@version)
+    version = params[:version] || 'HEAD'
+    script_content = @experiment.script_content(version)
     if script_content.nil?
       render_404
     else
