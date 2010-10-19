@@ -1,7 +1,7 @@
 = render :partial => 'contextual'
 %h2= l(:label_experiment_new)
 
-- form_for :experiment, :url => project_experiments_path(@project}, :html => {:class => 'tabular'} do
+- form_for :experiment, :url => project_experiments_path(@project), :html => {:class => 'tabular'} do
   - fields_for :experiment, @experiment, :builder => TabularFormBuilder do |f|
     = error_messages_for :experiment
     .box

@@ -24,6 +24,7 @@ class ExperimentsController < ApplicationController
 
   def create
     @experiment = Experiment.new(params[:experiment])
+    @experiment.project = @project
     @experiment.user = find_current_user
     if @experiment.save
       flash[:notice] = 'Experiment created successfully'
