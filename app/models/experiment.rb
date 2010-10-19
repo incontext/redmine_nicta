@@ -59,7 +59,7 @@ class Experiment < ActiveRecord::Base
                  "Copied from #{source_project.identifier} (updated by #{user.login} at #{Time.now.to_s})")
 
     destination_tree = destination_repo.tree("HEAD", script_path)
-    raise "Failed to copy script across" if destination_repo.contents.empty?
+    raise "Failed to copy script across" if destination_tree.contents.empty?
     target_experiment = Experiment.find_by_identifier_and_project_id(identifier, project_id)
     if target_experiment.nil?
       save!
