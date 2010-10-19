@@ -8,6 +8,6 @@
       = f.hidden_field :identifier
       = f.hidden_field :experiment_type
       %p
-        = f.select :project_id, (Project.visible-[@project]).map {|v| [v.name, v.id]}, :required => true
+        = f.select :project_id, Project.visible.map {|v| [v.name, v.id]}, :required => true
   = submit_tag 'Copy'
   = link_to 'Cancel', :back

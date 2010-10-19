@@ -28,17 +28,15 @@ module RedmineNicta
       target_project = context[:target_project]
 
       if source_experiment && source_project
-        target_experiment = Experiment.new
-        unique_identifier = "#{source_project.identifier}_#{source_experiment.identifier}"
-        target_experiment.identifier = unique_identifier
-        target_experiment.project = target_project
-        target_experiment.experiment_type = source_experiment.experiment_type
-        target_experiment.user = User.current
+        target_experiment = Experiment.new(
+          :identifier => source_experiment.identifier,
+          :project => target_project,
+          :experiment_type => source_experiment.experiment_type,
+          :user => User.current)
         target_experiment = target_experiment.copy_to_project(source_experiment, issue.experiment_version)
         issue.experiment_id = target_experiment.id
-        issue.experiment_version = target_experiment.commits.first.sha if target_experiment.script_committed?
+        issue.experiment_version = target_experiment.revision.sha if target_experiment.script_committed?
       end
     end
-
   end
 end

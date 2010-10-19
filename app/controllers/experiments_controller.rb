@@ -39,8 +39,6 @@ class ExperimentsController < ApplicationController
   end
 
   def edit_copy
-    unique_identifier = "#{@project.identifier}_#{@experiment.identifier}"
-    @experiment.identifier = unique_identifier
   end
 
   def copy
