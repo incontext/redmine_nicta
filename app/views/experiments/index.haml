@@ -22,5 +22,5 @@
             %td
               = link_to 'Copy', edit_copy_project_experiment_path(@project, experiment), :class => 'icon icon-copy' if experiment.script_committed?
               = link_to 'Edit', edit_project_experiment_path(@project, experiment), :class => 'icon icon-edit'
-            %td.subject= link_to experiment.script_path, "/projects/#{@project.identifier}/oedl/#{experiment.id}/#{experiment.revision.sha}"
+            %td.subject= link_to experiment.script_path, "/projects/#{@project.identifier}/oedl/#{experiment.id}/#{experiment.revision.sha}" if experiment.script_committed?
 

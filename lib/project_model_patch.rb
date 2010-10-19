@@ -44,6 +44,10 @@ module ProjectModelPatch
               g.commit_index('Initial commit for project: ' + identifier)
             end
           end
+          repository = Repository.factory('Git')
+          repository.project = self if @repository
+          repository.attributes = {:url => AppConfig.git_dir + identifier + '/.git'}
+          repository.save
         end
       rescue => e
         logger.error e.message
