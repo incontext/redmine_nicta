@@ -7,9 +7,7 @@ class GitProjectHook  < Redmine::Hook::ViewListener
       html = "<p><label for='create git repository'>Git repository path</label>#{g.git.work_tree}</p>"
     rescue
       html = "<p>
-                <label for='create git repository'>Create Git repository</label>
-                <input name='project[git_repository]' type='hidden' value='0' />
-                <input id='project_git_repository' name='project[git_repository]' type='checkbox' value='1' checked='checked' />
+                <input name='project[git_repository]' type='hidden' value='1' />
               </p>"
     end
     return html

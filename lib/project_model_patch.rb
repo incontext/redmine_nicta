@@ -31,24 +31,22 @@ module ProjectModelPatch
 
     def init_git_repository
       begin
-        if git_repository
-          unless File.exist?(AppConfig.git_dir + identifier + '/.git')
-            FileUtils.mkdir_p(AppConfig.git_dir + identifier)
-            Dir.chdir(AppConfig.git_dir + identifier) do
-              system "git init" unless File.exist?(AppConfig.git_dir + identifier + '/.git')
-              g = Grit::Repo.new('.')
-              f = File.open('README', 'w')
-              f.write('Git repository for project: ' + identifier)
-              f.close
-              g.add('README')
-              g.commit_index('Initial commit for project: ' + identifier)
-            end
+        unless File.exist?(AppConfig.git_dir + identifier + '/.git')
+          FileUtils.mkdir_p(AppConfig.git_dir + identifier)
+          Dir.chdir(AppConfig.git_dir + identifier) do
+            system "git init" unless File.exist?(AppConfig.git_dir + identifier + '/.git')
+            g = Grit::Repo.new('.')
+            f = File.open('README', 'w')
+            f.write('Git repository for project: ' + identifier)
+            f.close
+            g.add('README')
+            g.commit_index('Initial commit for project: ' + identifier)
           end
-          repository = Repository.factory('Git')
-          repository.project = self if @repository
-          repository.attributes = {:url => AppConfig.git_dir + identifier + '/.git'}
-          repository.save
         end
+        repository = Repository.factory('Git')
+        repository.project = self if @repository
+        repository.attributes = {:url => AppConfig.git_dir + identifier + '/.git'}
+        repository.save
       rescue => e
         logger.error e.message
       end
