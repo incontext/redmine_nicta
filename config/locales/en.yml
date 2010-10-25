@@ -4,6 +4,7 @@ en:
   field_script_path: Script path
   field_script_version: Script version
   field_experiment_attributes: Experiment Attribute
+  field_experiment_files: Measurement Files
   field_experiment_version: OEDL Script Version
   field_experiment_type: Experiment Types
   field_log_data: Log data
