@@ -40,8 +40,9 @@
 <!--[eoform:user]-->
 
 <p><label>Captcha <span class="required">*</span></label>
-  <img src="/images/captchas/<%= session[:captcha] %>.jpg" /><br />
-  <%= text_field_tag(:captcha) %>
+<%= image_tag("captchas/#{session[:captcha]}.jpg") %>
+<br />
+<%= text_field_tag(:captcha) %>
 </p>
 
 </div>
