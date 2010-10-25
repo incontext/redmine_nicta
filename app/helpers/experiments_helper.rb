@@ -29,7 +29,7 @@ module ExperimentsHelper
   def build_dygraph(table, node, rows)
     "
     <hr />
-    <p><b>Graph #{table} : #{node} </b></p>
+    <p><b>#{table.to_s.titleize} : #{node.to_s.titleize} </b></p>
     <div class=\"graph\" id=\"graph_#{table}_#{node}\" style=\"width: 550px; height: 350px;\"></div>
     <script type=\"text/javascript\">
       g_#{table}_#{node}= new Dygraph(
