@@ -1,5 +1,5 @@
 class Experiment < ActiveRecord::Base
-  has_many :issues
+  has_many :issues, :dependent => :destroy
   belongs_to :project
   belongs_to :user
   validates_presence_of :identifier, :experiment_type, :project_id, :user_id
@@ -72,7 +72,7 @@ class Experiment < ActiveRecord::Base
   def define_attributes(content)
     self.experiment_properties = []
     content.each do |line|
-      if line =~ /^\s*defProperty\('.*'\)/
+      if line =~ /^\s*defProperty\(['"].*['"]\)/
         eval(line)
       end
     end

@@ -6,6 +6,7 @@ class Reservation < ActiveRecord::Base
 
   belongs_to :project
   belongs_to :user
+  has_many :issues, :dependent => :destroy
 
   aasm_column :status
 
@@ -28,10 +29,12 @@ class Reservation < ActiveRecord::Base
     calendar = Calendar.find(service, {:id => AppConfig.gcal.calendars.first.identifier})
     event = Event.new(service, {
       :calendar => calendar,
-      :title => "#{resource} - #{user.name}",
+      :title => user.name,
+      :content => resource,
       :start_time => starts_at,
       :end_time => ends_at,
-      :where => resource})
+      :where => AppConfig.gcal.calendars.first.location
+    })
     event.save
   end
 
