@@ -28,7 +28,7 @@ Redmine::Plugin.register :redmine_nicta do
   name 'Nicta Redmine plugin'
   author 'InContext'
   description 'This is a experiement management plugin for Nicta'
-  version '0.1.0'
+  version '0.2'
 
   menu :project_menu, :experiments, {:controller => 'experiments', :action => 'index'}, :param => :project_id, :caption => :label_experiment_plural, :after => :files, :if => Proc.new { User.current.logged? }
   menu :project_menu, :reservations, {:controller => 'reservations', :action => 'index'}, :param => :project_id, :caption => :label_reservation_plural, :after => :files, :if => Proc.new { User.current.logged? }
