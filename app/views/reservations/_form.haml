@@ -2,13 +2,6 @@
   = error_messages_for :reservation
   .box
     %p
-      =# f.select :resource, AppConfig.resources, :required => true
-      = f.label_for_field(:resource, :required => true)
-
-      - AppConfig.resources.map {|v| v.nodes}.flatten.each do |v|
-        = v
-        = check_box_tag "reservation[resource][]", v, @resource.detect {|r| r == v}
-    %p
       = f.select :project_id, User.current.projects.map {|v| [v.name, v.id]}, :required => true
     %p
       = f.text_field :starts_at, :required => true
@@ -16,6 +9,19 @@
     %p
       = f.text_field :ends_at, :required => true
       = time_calendar_for('reservation_ends_at')
+
+  %h3 Resources
+
+  .box
+    - AppConfig.resources.each do |v|
+      %fieldset
+        %legend= v.identifier
+        = link_to_function(image_tag('toggle_check.png'), "toggleCheckboxesBySelector('input.resource_#{v.identifier}')", :title => "#{l(:button_check_all)}/#{l(:button_uncheck_all)}")
+
+        - v.nodes.each do |n|
+          = check_box_tag "reservation[resource][]", n, @resource.detect {|r| r == n}, :class => "resource_#{v.identifier}"
+          = n
+
 = submit_tag 'Save'
 = link_to 'Cancel', :back
 
