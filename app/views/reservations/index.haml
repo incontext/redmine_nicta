@@ -5,7 +5,7 @@
   jQuery.noConflict();
 
 .contextual
-  = link_to l(:label_reservation_add), new_reservation_url(:project_id => @project), :class => 'icon icon-add'
+  = link_to l(:label_reservation_add), new_project_reservation_url(@project), :class => 'icon icon-add'
 
 %h3 Reservations
 
@@ -46,13 +46,13 @@
                 %td= r.status.upcase
                 %td
                   - if User.current.allowed_to?({:controller => 'reservations', :action => 'approve'}, nil, :global => true) && r.pending?
-                    = link_to 'Approve', approve_reservation_url(r, :project_id => @project), :method => :put
+                    = link_to 'Approve', approve_project_reservation_url(@project, r), :method => :put
                     |
                   - if User.current.allowed_to?({:controller => 'reservations', :action => 'destroy'}, nil, :global => true) && r.pending?
-                    = link_to 'Deny', reservation_url(r, :project_id => @project), :method => :delete
+                    = link_to 'Deny', project_reservation_url(@project, r), :method => :delete
                     |
                   - if User.current.allowed_to?({:controller => 'reservations', :action => 'edit'}, nil, :global => true) && r.pending?
-                    = link_to 'Edit', edit_reservation_url(r, :project_id => @project), :class => 'icon icon-edit'
+                    = link_to 'Edit', edit_project_reservation_url(@project, r), :class => 'icon icon-edit'
 
 
 %script

@@ -1,4 +1,4 @@
 %h2 Edit reservation
 
-- form_for :reservation, :url => {:action => 'update', :project_id => @project}, :html => {:method => :put, :class => 'tabular'} do
+- form_for :reservation, :url => project_reservation_url(@project, @reservation), :html => {:method => :put, :class => 'tabular'} do
   = render :partial => 'form'
