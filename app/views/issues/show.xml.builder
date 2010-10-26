@@ -21,9 +21,25 @@ xml.issue do
   	xml.spent_hours		@issue.spent_hours
  	end
 
-  xml.experiment(:id => @issue.experiment_id, :name => "/projects/#{@issue.project.identifier}/oedl/#{@issue.experiment_id}/#{@issue.experiment.revision.sha}") unless @issue.experiment.nil?
-  xml.experiment_version(:id => @issue.experiment_version, :name => @issue.experiment.pretty_commit_id(@issue.experiment_version)) unless @issue.reservation.nil?
-  xml.reservation(:id => @issue.reservation_id, :name => @issue.reservation.print) unless @issue.reservation.nil?
+  #OEDL script & reservation
+  if !@issue.experiment.nil?
+    xml.odel_script do
+      xml.url("/projects/#{@issue.project.identifier}/oedl/#{@issue.experiment_id}/#{@issue.experiment.revision.sha}", @issue.experiment_id)
+      xml.version(@issue.experiment.pretty_commit_id(@issue.experiment_version), :id => @issue.experiment_version)
+    end
+  end
+
+  if !@issue.reservation.nil?
+    xml.reservation do
+      xml.resources do
+        YAML::load(@issue.reservation.resource).each do |r|
+          xml.resource r
+        end
+      end
+      xml.starts_at @issue.reservation.starts_at
+      xml.ends_at @issue.reservation.ends_at
+    end
+  end
 
   xml.custom_fields do
   	@issue.custom_field_values.each do |custom_value|
