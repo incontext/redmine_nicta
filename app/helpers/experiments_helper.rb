@@ -55,4 +55,11 @@ module ExperimentsHelper
     </p>
     "
   end
+
+  def render_properties(properties)
+    properties.map do |p|
+      "<p>" +  label_tag(p[0]) + text_field_tag("issue[experiment_attributes][#{p[0]}]", p[1]) + "</p>"
+    end.join("\n")
+  end
+
 end

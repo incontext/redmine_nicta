@@ -36,6 +36,6 @@ class Reservation < ActiveRecord::Base
   end
 
   def print
-    "#{resource} #{starts_at.strftime('%Y-%m-%d %H:%M:%S')}-#{ends_at.strftime('%Y-%m-%d %H:%M:%S')}"
+    "#{starts_at.strftime('%Y-%m-%d %H:%M:%S')} - #{ends_at.strftime('%Y-%m-%d %H:%M:%S')} " + resource
   end
 end

@@ -57,7 +57,7 @@ class ExperimentsController < ApplicationController
   def commit
     script_path = @experiment.script_path
     @experiment.commit(params[:script_content],
-                       params[:message] + " (updated by #{User.current.login} at #{Time.now.to_s})")
+                       params[:message] + " (updated by #{User.current.login} at #{Time.now.strftime('%Y-%m-%d %H:%M:%S')})")
     flash[:notice] = 'Experiment script committed to repository'
     redirect_to project_experiments_url(:project_id => @project)
   rescue => e
@@ -74,7 +74,6 @@ class ExperimentsController < ApplicationController
 
   def change_experiment
     @experiment.define_attributes(@experiment.script_content)
-    form_fields = ""
     render :update do |page|
       page.replace_html "experiment_properties", render_properties(@experiment.experiment_properties)
       page.replace_html "issue_experiment_version", options_for_select(@experiment.revisions.map {|v| [@experiment.pretty_commit_id(v.sha), v.sha]})
@@ -93,11 +92,5 @@ class ExperimentsController < ApplicationController
     @experiment = Experiment.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render_404
-  end
-
-  def render_properties(properties)
-    properties.map do |p|
-      "<p>" +  label_tag(p[0]) + text_field_tag("issue[experiment_attributes][#{p[0]}]", p[1]) + "</p>"
-    end.join("\n")
   end
 end

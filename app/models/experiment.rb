@@ -56,7 +56,7 @@ class Experiment < ActiveRecord::Base
                  AppConfig.git_dir + destination_project.identifier,
                  script_path,
                  script_content,
-                 "Copied from #{source_project.identifier} (updated by #{user.login} at #{Time.now.to_s})")
+                 "Copied from #{source_project.identifier} (updated by #{user.login} at #{Time.now.strftime('%Y-%m-%d %H:%M:%S')})")
 
     destination_tree = destination_repo.tree("HEAD", script_path)
     raise "Failed to copy script across" if destination_tree.contents.empty?
