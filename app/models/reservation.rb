@@ -2,6 +2,8 @@ class Reservation < ActiveRecord::Base
   include AASM
   include GCal4Ruby
 
+  validates_presence_of :starts_at, :ends_at, :resource
+
   belongs_to :project
   belongs_to :user
 

@@ -8,17 +8,18 @@ ul.tabs {
 ul.tabs li {
   float: left;
   padding: 0;
-  padding-left: 10px;
+  padding-left: 3px;
   margin: 0;
   list-style-type: none; }
 
 /* link inside the tab. uses a background image */
 ul.tabs a {
   float: left;
+  -moz-border-radius: 0.3em 0.3em 0 0;
+  -webkit-border-radius: 0.3em 0.3em 0 0;
   display: block;
   padding: 3px 10px;
   text-decoration: none;
-  border: 1px solid #bbb;
   border-bottom: 0px;
   height: 18px;
   background-color: #eee;
@@ -26,11 +27,13 @@ ul.tabs a {
   position: relative; }
 
 ul.tabs a:hover {
-  background-color: #eee; }
+  background-color: #eee;
+}
 
 /* selected tab */
 ul.tabs a.current {
-  background-color: white;
+  background-color: #eee;
+  font-weight: bold;
   cursor: default; }
 
 /* tab pane */

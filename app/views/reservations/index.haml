@@ -10,10 +10,12 @@
 %h3 Reservations
 
 %ul.tabs
-  %li= link_to 'List', '#list'
   %li= link_to 'Calendar', '#calendar'
+  %li= link_to 'List', '#list'
 
 .panes
+  .pane.calendar
+    %iframe{:src=> AppConfig.gcal.calendars.first.private_address, :style=>" border-width:0 ", :width=>"100%", :height=>"600", :frameborder=>"0"}
   .pane.list
     - if @reservations.empty?
       %p.nodata
@@ -21,37 +23,37 @@
     - else
       .autoscroll
         %table.list
-          %tr
-            %th Resource
-            %th Project
-            %th Time
-            %th Submitted by
-            %th Status
-            %th Action
-          - @reservations.each_with_index do |r, index|
-            %tr.issue{:class => index % 2 == 0 ? 'odd' : 'even'}
-              %td.subject
-                = r.resource
-              %td.subject
-                = Project.find(r.project_id).name
-              %td
-                = r.starts_at.strftime('%Y-%m-%d %H:%M:%S')
-                \-
-                = r.ends_at.strftime('%Y-%m-%d %H:%M:%S')
-              %td= User.find(r.user_id).name if r.user_id
-              %td= r.status.upcase
-              %td
-                - if User.current.allowed_to?({:controller => 'reservations', :action => 'approve'}, nil, :global => true) && r.pending?
-                  = link_to 'Approve', approve_reservation_url(r, :project_id => @project), :method => :put
-                  |
-                - if User.current.allowed_to?({:controller => 'reservations', :action => 'destroy'}, nil, :global => true) && r.pending?
-                  = link_to 'Deny', reservation_url(r, :project_id => @project), :method => :delete
-                  |
-                - if User.current.allowed_to?({:controller => 'reservations', :action => 'edit'}, nil, :global => true) && r.pending?
-                  = link_to 'Change', edit_reservation_url(r, :project_id => @project)
+          %thead
+            %tr
+              %th Resource
+              %th Project
+              %th Time
+              %th Submitted by
+              %th Status
+              %th Action
+          %tbody
+            - @reservations.each_with_index do |r, index|
+              %tr.priority-1.issue{:class => index % 2 == 0 ? 'odd' : 'even'}
+                %td.subject
+                  = r.resource
+                %td.subject
+                  = Project.find(r.project_id).name
+                %td
+                  = r.starts_at.strftime('%Y-%m-%d %H:%M:%S')
+                  \-
+                  = r.ends_at.strftime('%Y-%m-%d %H:%M:%S')
+                %td= User.find(r.user_id).name if r.user_id
+                %td= r.status.upcase
+                %td
+                  - if User.current.allowed_to?({:controller => 'reservations', :action => 'approve'}, nil, :global => true) && r.pending?
+                    = link_to 'Approve', approve_reservation_url(r, :project_id => @project), :method => :put
+                    |
+                  - if User.current.allowed_to?({:controller => 'reservations', :action => 'destroy'}, nil, :global => true) && r.pending?
+                    = link_to 'Deny', reservation_url(r, :project_id => @project), :method => :delete
+                    |
+                  - if User.current.allowed_to?({:controller => 'reservations', :action => 'edit'}, nil, :global => true) && r.pending?
+                    = link_to 'Edit', edit_reservation_url(r, :project_id => @project), :class => 'icon icon-edit'
 
-  .pane.calendar
-    %iframe{:src=> AppConfig.gcal.calendars.first.private_address, :style=>" border-width:0 ", :width=>"100%", :height=>"600", :frameborder=>"0"}
 
 %script
   jQuery(function() {

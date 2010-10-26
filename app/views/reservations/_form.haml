@@ -2,7 +2,12 @@
   = error_messages_for :reservation
   .box
     %p
-      = f.select :resource, AppConfig.resources, :required => true
+      =# f.select :resource, AppConfig.resources, :required => true
+      = f.label_for_field(:resource, :required => true)
+
+      - AppConfig.resources.map {|v| v.nodes}.flatten.each do |v|
+        = v
+        = check_box_tag "reservation[resource][]", v, @resource.detect {|r| r == v}
     %p
       = f.select :project_id, User.current.projects.map {|v| [v.name, v.id]}, :required => true
     %p

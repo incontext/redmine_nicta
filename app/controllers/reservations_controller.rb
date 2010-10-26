@@ -3,6 +3,7 @@ class ReservationsController < ApplicationController
 
   before_filter :find_project, :authorize
   before_filter :find_reservation, :only => [:update, :edit, :destroy, :deny, :approve]
+  before_filter :find_resource, :only => [:new, :edit, :update, :create]
 
   def new
     @reservation = Reservation.new(:project_id => @project)
@@ -63,6 +64,11 @@ class ReservationsController < ApplicationController
 
   def find_reservation
     @reservation = Reservation.find(params[:id])
+  end
+
+  def find_resource
+    @resource = (@reservation && YAML::load(@reservation.resource)) ||
+      (params[:reservation] && params[:reservation][:resource]) || []
   end
 
   def find_project
