@@ -39,5 +39,6 @@ Redmine::Plugin.register :redmine_nicta do
     permission :view_reservations, :reservations => [:index]
     permission :edit_reservations, :reservations => [:new, :create, :update, :edit]
     permission :manage_reservations, :reservations => [:approve, :destroy]
+    permission :upload_experiment_outcomes, :experiment_outcomes => [:create]
   end
 end
