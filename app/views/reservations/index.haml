@@ -10,12 +10,10 @@
 %h3 Reservations
 
 %ul.tabs
-  %li= link_to 'Calendar', '#calendar'
   %li= link_to 'List', '#list'
+  %li= link_to 'Calendar', '#calendar'
 
 .panes
-  .pane.calendar
-    %iframe{:src=> AppConfig.gcal.calendars.first.private_address, :style=>" border-width:0 ", :width=>"100%", :height=>"600", :frameborder=>"0"}
   .pane.list
     - if @reservations.empty?
       %p.nodata
@@ -53,6 +51,9 @@
                     |
                   - if User.current.allowed_to?({:controller => 'reservations', :action => 'edit'}, nil, :global => true) && r.pending?
                     = link_to 'Edit', edit_project_reservation_url(@project, r), :class => 'icon icon-edit'
+  .pane.calendar
+    - src = "http://www.google.com/calendar/embed?" + AppConfig.resources.map {|v| "src=#{v.gcal}&color=#{v.colour}"}.join("&") + "&pvttk=#{AppConfig.gcal.pvttk}&ctz=#{AppConfig.gcal.ctz}&showTitle=0"
+    %iframe{:src=>URI.escape(src), :style=>" border-width:0 ", :width=>"100%", :height=>"600", :frameborder=>"0"}
 
 
 %script

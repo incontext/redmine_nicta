@@ -26,16 +26,30 @@ class Reservation < ActiveRecord::Base
   def add_to_google_calendar
     service = Service.new
     service.authenticate(AppConfig.gcal.account, AppConfig.gcal.password)
-    calendar = Calendar.find(service, {:id => AppConfig.gcal.calendars.first.identifier})
-    event = Event.new(service, {
-      :calendar => calendar,
-      :title => user.name,
-      :content => resource,
-      :start_time => starts_at,
-      :end_time => ends_at,
-      :where => AppConfig.gcal.calendars.first.location
-    })
-    event.save
+
+    calendars = {}.tap do |hash|
+      AppConfig.resources.each do |r|
+        hash[r.gcal] ||= []
+        YAML::load(resource).each do |n|
+          hash[r.gcal] << n if r.nodes.detect {|v| v == n}
+        end
+      end
+    end
+
+    calendars.each_pair do |g, nodes|
+      if !nodes.empty?
+        calendar = Calendar.find(service, {:id => g})
+        event = Event.new(service, {
+          :calendar => calendar,
+          :title => user.name,
+          :content => nodes.to_yaml,
+          :start_time => starts_at,
+          :end_time => ends_at,
+          :where => AppConfig.gcal.location
+        })
+        event.save
+      end
+    end
   end
 
   def print
