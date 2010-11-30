@@ -31,12 +31,13 @@ Redmine::Plugin.register :redmine_nicta do
   version '0.2'
 
   menu :project_menu, :experiments, {:controller => 'experiments', :action => 'index'}, :param => :project_id, :caption => :label_experiment_plural, :after => :files, :if => Proc.new { User.current.logged? }
+  menu :project_menu, :reservation_calendar, {:controller => 'reservations', :action => 'calendar'}, :param => :project_id, :caption => :label_reservation_calendar, :after => :files, :if => Proc.new { User.current.logged? }
   menu :project_menu, :reservations, {:controller => 'reservations', :action => 'index'}, :param => :project_id, :caption => :label_reservation_plural, :after => :files, :if => Proc.new { User.current.logged? }
 
   project_module :nicta do
     permission :view_experiments, :experiments => [:show, :index]
     permission :manage_experiments, :experiments => [:new, :edit, :create, :commit, :change_experiment, :change_experiment_version, :edit_copy, :copy]
-    permission :view_reservations, :reservations => [:index]
+    permission :view_reservations, :reservations => [:index, :show, :calendar]
     permission :edit_reservations, :reservations => [:new, :create, :update, :edit]
     permission :manage_reservations, :reservations => [:approve, :destroy]
     permission :upload_experiment_outcomes, :experiment_outcomes => [:create]

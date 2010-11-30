@@ -1,0 +1,19 @@
+.contextual
+  = link_to l(:label_reservation_add), new_project_reservation_path(@project), :class => 'icon icon-add'
+
+- content_for :sidebar do
+  = render :partial => 'sidebar'
+
+%h2
+  = l(:label_reservation_calendar)
+  = "##{@resource_cal.identifier}"
+
+%p
+  All resources:
+  - AppConfig.resources.each do |r|
+    - if r.identifier == @resource_cal.identifier
+      = r.identifier
+    - else
+      = link_to r.identifier, calendar_project_reservations_path(@project, :cal => r.identifier)
+
+%iframe{:src=> @calendar_src, :style=>" border-width:0 ", :width=>"100%", :height=>"600", :frameborder=>"0"}

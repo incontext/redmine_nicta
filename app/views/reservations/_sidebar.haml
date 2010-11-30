@@ -1,0 +1,8 @@
+%h3= l(:label_reservation_plural)
+= link_to "View All #{l(:label_reservation_plural)}", project_reservations_path(@project)
+%br
+= link_to "View Pending #{l(:label_reservation_plural)}", project_reservations_path(@project, :filter => :pending)
+%br
+= link_to l(:label_reservation_calendar), calendar_project_reservations_path(@project)
+
+

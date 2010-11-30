@@ -22,6 +22,7 @@ en:
   label_experiment_copy: Copy OEDL Script
   label_experiment_manage: Manage OEDL Script
   label_reservation_plural: Reservations
+  label_reservation_calendar: Reservation Calendar
   label_reservation_add: Add Reservation
 
   label_issue: Experiment
