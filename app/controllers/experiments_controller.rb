@@ -5,7 +5,13 @@ class ExperimentsController < ApplicationController
   before_filter :find_experiment, :authorize, :only => [:show, :edit, :edit_copy, :commit, :change_experiment_version, :change_experiment]
 
   def index
-    @experiments = @project.experiments.all
+    @experiment_pages, @experiments = paginate :experiments,
+      :per_page => 10,
+      :conditions => Project.allowed_to_condition(User.current, :view_experiments, :project => @project),
+      :include => [:user, :project],
+      :order => 'experiments.identifier'
+
+    render :layout => false if request.xhr?
   end
 
   def new

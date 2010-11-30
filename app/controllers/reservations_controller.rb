@@ -42,10 +42,15 @@ class ReservationsController < ApplicationController
   end
 
   def index
-    @reservations = params[:filter] == 'pending'? Reservation.pending(:order => 'starts_at desc') :
-      Reservation.all(:order => 'starts_at desc')
+    conditions = params[:filter] == 'pending' ? " status = 'pending' " : ""
+
+    @reservation_pages, @reservations = paginate :reservations,
+      :per_page => 10,
+      :conditions => conditions,
+      :order => 'reservations.starts_at desc'
+
     respond_to do |format|
-      format.html
+      format.html { render :layout => false if request.xhr? }
       format.xml { render :xml => Reservation.approved.to_xml }
     end
   end

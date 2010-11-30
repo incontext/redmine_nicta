@@ -40,3 +40,6 @@
                 = link_to 'Deny', project_reservation_url(@project, r), :method => :delete, :class => 'icon icon-del'
               - if User.current.allowed_to?({:controller => 'reservations', :action => 'edit'}, nil, :global => true) && r.pending?
                 = link_to 'Edit', edit_project_reservation_url(@project, r), :class => 'icon icon-edit'
+
+%p.pagination
+  = pagination_links_full @reservation_pages

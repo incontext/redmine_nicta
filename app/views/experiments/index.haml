@@ -24,3 +24,6 @@
               = link_to 'Edit', edit_project_experiment_path(@project, experiment), :class => 'icon icon-edit'
             %td.subject= link_to experiment.script_path, "/projects/#{@project.identifier}/oedl/#{experiment.id}/#{experiment.revision.sha}" if experiment.script_committed?
 
+%p.pagination
+  = pagination_links_full @experiment_pages
+
