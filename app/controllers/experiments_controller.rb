@@ -5,9 +5,17 @@ class ExperimentsController < ApplicationController
   before_filter :find_experiment, :authorize, :only => [:show, :edit, :edit_copy, :commit, :change_experiment_version, :change_experiment]
 
   def index
+    conditions = Project.allowed_to_condition(User.current, :view_experiments, :project => @project)
+
+    conditions += " AND experiment_type = '#{params[:experiment_type]}' " if params[:experiment_type]
+
+    @experiment_types = @project.experiments.all(
+      :select => 'distinct experiment_type',
+      :order => :experiment_type).map {|v| v.experiment_type}
+
     @experiment_pages, @experiments = paginate :experiments,
       :per_page => 10,
-      :conditions => Project.allowed_to_condition(User.current, :view_experiments, :project => @project),
+      :conditions => conditions,
       :include => [:user, :project],
       :order => 'experiments.identifier'
 

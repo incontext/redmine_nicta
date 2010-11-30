@@ -1,7 +1,7 @@
 = javascript_include_tag 'codemirror/codemirror.js', :plugin => 'redmine_nicta'
 
 %h2
-  = "#{@experiment.identifier} / #{@experiment.script_path}"
+  = "#{l(:label_experiment)} ##{@experiment.identifier} ##{@experiment.script_path}"
 .content
   - if @experiment.script_committed?
     %p

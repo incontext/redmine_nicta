@@ -1,4 +1,6 @@
 = render :partial => 'contextual'
+- content_for :sidebar do
+  = render :partial => 'sidebar'
 %h2= l(:label_experiment_plural)
 - if @experiments.empty?
   %p.nodata
@@ -8,6 +10,7 @@
     %table.list
       %thead
         %tr
+          %th #
           %th Identifier
           %th Experiment Type
           %th Latest revision id
@@ -16,13 +19,15 @@
       %tbody
         - @experiments.each_with_index do |experiment, index|
           %tr.issue.priority-1{:class => index % 2 == 0 ? 'odd' : 'even'}
-            %td.subject= experiment.identifier
+            %td.subject= experiment.id
+            %td= experiment.identifier
             %td= experiment.experiment_type
             %td= experiment.revision.sha if experiment.script_committed?
             %td
               = link_to 'Copy', edit_copy_project_experiment_path(@project, experiment), :class => 'icon icon-copy' if experiment.script_committed?
               = link_to 'Edit', edit_project_experiment_path(@project, experiment), :class => 'icon icon-edit'
-            %td.subject= link_to experiment.script_path, "/projects/#{@project.identifier}/oedl/#{experiment.id}/#{experiment.revision.sha}" if experiment.script_committed?
+            - full_path = "/projects/#{@project.identifier}/oedl/#{experiment.id}/#{experiment.revision.sha}" if experiment.script_committed?
+            %td.subject= link_to(experiment.script_path, full_path, :title => full_path) if !full_path.nil?
 
 %p.pagination
   = pagination_links_full @experiment_pages

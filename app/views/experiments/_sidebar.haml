@@ -1,0 +1,8 @@
+%h3= l(:label_experiment_plural)
+
+= link_to "View all #{l(:label_experiment_plural)}", project_experiments_path(@project)
+
+%h3 Experiment Type
+- @experiment_types.each do |et|
+  = link_to et, project_experiments_path(@project, :experiment_type => et)
+  %br
