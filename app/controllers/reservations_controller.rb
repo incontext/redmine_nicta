@@ -5,6 +5,8 @@ class ReservationsController < ApplicationController
   before_filter :find_reservation, :only => [:update, :edit, :destroy, :deny, :approve]
   before_filter :find_resource, :only => [:new, :edit, :update, :create]
 
+  menu_item :reservation_calendar, :only => [:calendar]
+
   def new
     @reservation = Reservation.new(:project_id => @project.id)
   end
