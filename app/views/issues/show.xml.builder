@@ -31,6 +31,7 @@ xml.issue do
 
   if !@issue.reservation.nil?
     xml.reservation do
+      xml.id @issue.reservation_id
       xml.resources do
         YAML::load(@issue.reservation.resource).each do |r|
           xml.resource r
