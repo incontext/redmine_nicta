@@ -2,10 +2,12 @@ class ReservationsController < ApplicationController
   unloadable
 
   before_filter :find_project, :authorize
-  before_filter :find_reservation, :only => [:update, :edit, :destroy, :deny, :approve]
+  before_filter :find_reservation, :only => [:show, :update, :edit, :destroy, :deny, :approve]
   before_filter :find_resource, :only => [:new, :edit, :update, :create]
 
   menu_item :reservation_calendar, :only => [:calendar]
+
+  accept_key_auth :index, :show
 
   def new
     @reservation = Reservation.new(:project_id => @project.id)
@@ -58,7 +60,6 @@ class ReservationsController < ApplicationController
   end
 
   def show
-    @reservation = Reservation.find(params[:id])
     respond_to do |format|
       format.xml { render :xml => @reservation.to_xml }
     end
@@ -84,6 +85,8 @@ class ReservationsController < ApplicationController
 
   def find_reservation
     @reservation = Reservation.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render_404
   end
 
   def find_resource
