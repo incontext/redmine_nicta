@@ -1,7 +1,7 @@
-require 'base64'
-
 class ExperimentOutcomesController < ApplicationController
   unloadable
+
+  protect_from_forgery :except => :create
 
   before_filter :find_project, :authorize
 
@@ -30,14 +30,16 @@ class ExperimentOutcomesController < ApplicationController
                                                  :user => User.current)
         end
 
-        @issue.experiment.commit(Base64.decode64(script[:source]), "File commited by http POST (updated by #{User.current.login} at #{Time.now.strftime('%Y-%m-%d %H:%M:%S')})")
+        @issue.experiment.commit(script[:source], "File commited by http POST (updated by #{User.current.login} at #{Time.now.strftime('%Y-%m-%d %H:%M:%S')})")
 
         @issue.experiment_version = @issue.experiment.revision.sha
         @issue.experiment_attributes = params[:experiment_outcome][:properties]
         @issue.start_date = Time.parse(params[:experiment_outcome][:start])
 
+        attachments = params[:experiment_outcome][:files]
 
         if @issue.save!
+          Attachment.attach_files(@issue, attachments)
           respond_to do |format|
             format.xml  { render(:xml => @issue.to_xml, :status => :ok); return }
           end
