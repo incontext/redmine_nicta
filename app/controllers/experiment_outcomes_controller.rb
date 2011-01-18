@@ -19,15 +19,19 @@ class ExperimentOutcomesController < ApplicationController
           @issue.subject = params[:experiment_outcome][:subject]
           @issue.tracker = Tracker.find_by_name("Experiment")
           @issue.custom_field_values = {IssueCustomField.find_by_name('Test bed').id => params[:experiment_outcome][:testbed]}
-          @issue.reservation = Reservation.find(params[:experiment_outcome][:reservation][:id])
+          #@issue.reservation = Reservation.find(params[:experiment_outcome][:reservation][:id])
         end
 
         script = params[:experiment_outcome][:script]
         if @issue.experiment.nil?
-          @issue.experiment = Experiment.create!(:identifier => script[:identifier],
-                                                 :experiment_type => script[:experiment_type],
-                                                 :project => @project,
-                                                 :user => User.current)
+          @experiment = Experiment.find_by_identifier_and_project_id(script[:identifier], @project.id) || @project.experiments.new
+          if @experiment.new_record?
+            @experiment.identifier = script[:identifier]
+            @experiment.experiment_type = script[:experiment_type]
+            @experiment.user = User.current
+            @experiment.save!
+          end
+          @issue.experiment = @experiment
         end
 
         @issue.experiment.commit(script[:source], "File commited by http POST (updated by #{User.current.login} at #{Time.now.strftime('%Y-%m-%d %H:%M:%S')})")
@@ -50,7 +54,7 @@ class ExperimentOutcomesController < ApplicationController
         end
       rescue => e
         respond_to do |format|
-          format.xml { render(:xml => "<errors>#{e.message}</errors>", :status => 500); return }
+          format.xml { render(:xml => "<errors>#{e.backtrace.join("\n")}</errors>", :status => 500); return }
         end
       end
     end
