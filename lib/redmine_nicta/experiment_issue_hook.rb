@@ -7,7 +7,7 @@ module RedmineNicta
               :partial => 'hooks/redmine_nicta/view_issues_form_details_bottom'
 
     def set_experiment_properties(context)
-      [:experiment_attributes, :experiment_id, :experiment_version, :reservation_id].each do |v|
+      [:experiment_attributes, :experiment_id, :experiment_version, :reservation_option, :reservation_id].each do |v|
         context[:issue].send("#{v.to_s}=", context[:params][:issue][v])
       end
     end

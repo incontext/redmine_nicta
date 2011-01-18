@@ -10,6 +10,7 @@ en:
   field_log_data: Log data
   field_experiment: OEDL Script
   field_reservation: Reservation
+  field_reservation_option: Reservation option
   field_resource: Resource
   field_starts_at: Starts at
   field_ends_at: Ends at

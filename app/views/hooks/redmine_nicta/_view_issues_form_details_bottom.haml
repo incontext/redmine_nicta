@@ -1,8 +1,13 @@
 - experiments = project.committed_experiments
 - reservations = project.available_reservations
+- reservation_options = AppConfig.reservation_options
 
-- if !experiments.empty? && !reservations.empty?
-  %p= form.select :reservation_id, reservations.map {|v| [v.print, v.id]}, :required => true
+- if !experiments.empty?
+  %p= form.select :reservation_option, reservation_options, :required => true
+  - reservation_option = issue.reservation_option || reservation_options.first
+
+  %p= form.select :reservation_id, [["--- Please select ---", nil]] + reservations.map {|v| [v.print, v.id]}
+
   %p= form.select :experiment_id, experiments.map {|v| [v.identifier, v.id]}, :required => true
   - experiment = issue.experiment || experiments.first
   %p= form.select :experiment_version, experiment.revisions.map {|v| [experiment.pretty_commit_id(v.sha), v.sha]}, :required => true

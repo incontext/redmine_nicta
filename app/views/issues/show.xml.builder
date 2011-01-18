@@ -29,6 +29,8 @@ xml.issue do
     end
   end
 
+  xml.reservation_option @issue.reservation_option
+
   if !@issue.reservation.nil?
     xml.reservation do
       xml.id @issue.reservation_id
