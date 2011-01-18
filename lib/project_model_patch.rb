@@ -24,7 +24,7 @@ module ProjectModelPatch
     end
 
     def available_reservations
-      reservations.approved
+      reservations.approved.find(:all, :conditions => ["starts_at > ?", Time.now])
     end
 
     private
