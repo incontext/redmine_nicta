@@ -3,22 +3,16 @@ require 'redmine'
 module WikiExperimentMacros
   Redmine::WikiFormatting::Macros.register do
     desc "Display experiments of the page."
-    macro :experiment_script do |obj, args|
+    macro :oedl_script do |obj, args|
       @project = Project.find(args[0])
-      @experiment = Experiment.find_by_identifier(args[1])
+      @experiment = @project.experiments.find(:first, :conditions => {:identifier => args[1] })
       version = args[2] || 'HEAD'
 
-      allowed = User.current.allowed_to?({:controller => 'experiments', :action => 'edit'}, @project)
+      allowed = User.current.allowed_to?({:controller => 'experiments', :action => 'show'}, @project)
 
       if allowed
-        @script_path = @experiment.script_path
-        @repo = Grit::Repo.new(AppConfig.git_dir + @project.identifier)
-        tree = @repo.tree(version, @script_path)
-        unless tree.contents.empty?
-          @script = tree.contents.first
-          @commits = @experiment.commits
-          @commit = @commits.find {|v| v.sha == version} || @commits.first
-          textilizable "<pre><code class=\"ruby\">#{@script.data}</code></pre>"
+        if @experiment.script_committed?
+          textilizable "<pre><code class=\"ruby\">#{@experiment.script_content(version)}</code></pre>"
         else
           raise "Empty script"
         end
