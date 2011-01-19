@@ -35,10 +35,9 @@ class ExperimentOutcomesController < ApplicationController
         end
 
         @issue.experiment.commit(script[:source], "File commited by http POST (updated by #{User.current.login} at #{Time.now.strftime('%Y-%m-%d %H:%M:%S')})")
-
         @issue.experiment_version = @issue.experiment.revision.sha
         @issue.experiment_attributes = params[:experiment_outcome][:properties]
-        @issue.start_date = Time.parse(params[:experiment_outcome][:start])
+        @issue.libraries = params[:experiment_outcome][:library]
 
         attachments = params[:experiment_outcome][:files]
 

@@ -22,6 +22,15 @@
         %th Reservation
         %td= issue.reservation.print
 
+  - if issue.libraries
+    %table.attributes
+      - YAML::load(issue.libraries).each do |l|
+        %tr
+          %th= l[:name]
+          %td= l[:scm]
+          %td= l[:url]
+          %td= l[:version]
+
   - issue.attachments.find_all {|v| v.filename =~ /\.sq3$/}.each do |attachment|
     = render_sqlite_graph(attachment.diskfile)
 
